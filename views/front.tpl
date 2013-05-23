@@ -1,6 +1,16 @@
-<h1>Tähän tulee etusivu!</h1>
-<h2>Vuorolistajärjestelmä</h2>
+<html>
+    <head>
+        <title>
+            Vuorolistajärjestelmä
+        </title>
+    </head>
 
-<img src="http://i.imgur.com/VzmnRZv.jpg" title="Meme"/>
-<p>motivaatioMeme!</p>
-<a href="/login">Kirjaudu</a>
+    <body>        
+        <h1>Tähän tulee etusivu!</h1>
+        <h2>Vuorolistajärjestelmä</h2>
+
+        <img src="http://i.imgur.com/VzmnRZv.jpg" title="Meme"/>
+        <p>motivaatioMeme!</p>
+        <a href="/login">Kirjaudu</a>
+    </body>
+</html>
