@@ -10,7 +10,7 @@
         <h2>Vuorolistajärjestelmä</h2>
 
         <img src="http://i.imgur.com/VzmnRZv.jpg" title="Meme"/>
-        <p>motivaatioMeme!</p>
+        <p style = "font-size: 30px; color:violet">motivaatioMeme!</p>
         <a href="/login">Kirjaudu</a>
     </body>
 </html>

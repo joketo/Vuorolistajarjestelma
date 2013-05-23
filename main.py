@@ -16,6 +16,10 @@ def login_page():
 def test():
     return template("test", nimet=["a", "b", "c"], rand=rand)
 
+@route("/possibleCustomers")
+def asiakkaat():
+    return template("possibleCustomers", hoitajat =["a", "b"], potilaat =["i", "j", "k", "h"], rand=rand)
+
 if __name__ == "__main__":
     run(host='localhost', port=8080, debug=True)
 
