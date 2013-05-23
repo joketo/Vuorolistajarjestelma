@@ -2,10 +2,7 @@ from bottle import route, run, template
 
 @route('/')
 def etusivu():
-    return """
-    <h1>Tähän tulee etusivu!</h1>
-    <a href="/login">Kirjaudu</a>
-    """
+    return template("front")
 
 @route("/login")
 def login():
