@@ -1,17 +1,19 @@
 %#ottaa listan hoitajat ja listan asiakkaat
 %#muodostaa taulukon siitä, keillä kaikilla asiakkailla kukin hoitaja voi käydä
-
-#for i in hoitajat:
+<table>
+%for i in hoitajat:
     <tr>
-        <td>i</td>
+        <td>{{i}}</td>
+%for a in potilaat:
+%if rand():            
+        <td>{{a}}</td>
+%end
+%end
     </tr>
-    #for a in potilaat:
-        if rand():
-            <tr>
-                <td>a</td>
-            </tr>
 
-            
+%end
+</table>	
+<!--            
 <html>
     <body>
         <table>
@@ -27,4 +29,4 @@
         </table>
     </body>
 </html>
-
+-->
