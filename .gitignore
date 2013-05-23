@@ -1,4 +1,5 @@
-/bin
-/lib
-/include
-/__config__
+bin
+lib
+include
+__config__
+
