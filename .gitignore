@@ -1,5 +1,8 @@
 bin
 lib
 include
+build
+share
+__pycache__
 __config__
 
