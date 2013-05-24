@@ -22,10 +22,13 @@ class Auth(object):
 
     def login(self, uname, passwd):
         """Logs a user in, sets and returns a session id"""
+        if uname not in self.users:
+            return None
+
         user = self.users[uname] #TODO: catch this
-        if user.pwhash == bcrypt.hashpw(passwd, user.salt):
+        if user.pwhash == bcrypt.hashpw(passwd.encode(), user.salt):
             user.sid = 1 #TODO: something sane here
-            return user.sid
+            return str(user.sid)
         
     def isLogged(self, uname, sid):
         return sid == self.users[uname].sid
