@@ -27,14 +27,18 @@ class Auth(object):
 
         user = self.users[uname] #TODO: catch this
         if user.pwhash == bcrypt.hashpw(passwd.encode(), user.salt):
-            user.sid = 1 #TODO: something sane here
+            user.sid = "1" #TODO: something sane here
             return str(user.sid)
         
     def isLogged(self, uname, sid):
-        return sid == self.users[uname].sid
+        return uname in self.users and sid == self.users[uname].sid
+        
 
-    def logout(self, uname):
-        self.users[uname].sid = None
+    def logout(self, uname, sid):
+        print("logout: " + uname + " " + sid)
+        if self.isLogged(uname, sid):
+            print("should work?")
+            self.users[uname].sid = None
 
     def register(self, uname, passwd):
         if not uname in self.users:

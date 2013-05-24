@@ -21,16 +21,32 @@ def login_submit():
     
     sidOrNone = a.login(name,passwd)
     if sidOrNone:
+        response.set_cookie("name", name)
         response.set_cookie("sid", sidOrNone) #TODO: signed cookies!
         return "Logged in!"
     else:
-        return "Login failed" 
+        return "Login failed"
+
+@route("/logout")
+def logout():
+    name = request.get_cookie("name")
+    sid = request.get_cookie("sid")
+    a.logout(name, sid)
         
 
 @route("/nah")
 def nah():
     return """nope"""
 
+@route("/whoami")
+def whoami():
+    name = request.get_cookie("name")
+    sid = request.get_cookie("sid")
+
+    print(name,sid)
+    if a.isLogged(name, sid):
+        return template("""You are logged in as {{name}}""", name=name)
+    else: return """You are not logged in"""
 
 @route("/test")
 def test():
