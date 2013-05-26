@@ -15,9 +15,10 @@ class User(object):
 
 class Auth(object):
     """Module for authenticating users and managing sessions."""
-    def __init__(self, ):
+    def __init__(self):
         #test users-dict
-        self.users = {"pekka":User("pekka", "salasana")}
+        #TODO: näihin hommiin tietokantaa
+        self.users = {"pekka":User("pekka", "salasana")} 
 
     def login(self, name, password):
         """Logs session in as a user, throws KeyError when no such user present"""
@@ -28,7 +29,6 @@ class Auth(object):
             return True
         return False
 
-    
     def loggedAs(self):
         """Return the name with wich the current session is logged in as"""
         s = request.environ["beaker.session"]
@@ -39,12 +39,11 @@ class Auth(object):
             return True
         return False
 
-    def logout(self, uname, sid):
-        print("logout: " + uname + " " + sid)
-        if self.isLogged(uname, sid):
-            print("should work?")
-            self.users[uname].sid = None
+    def logout(self):
+        s = request.environ["beaker.session"]
+        s.pop("name")
 
     def register(self, uname, passwd):
-        if not uname in self.users:
-            newUser = User(uname, passwd)
+        if uname in self.users:
+            raise Exception("Can't make duplicate user")
+        newUser = User(uname, passwd)
