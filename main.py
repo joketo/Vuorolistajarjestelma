@@ -1,6 +1,15 @@
 from bottle import route, run, template, response, request
+from beaker.middleware import SessionMiddleware
+import bottle
 import auth
 import random
+
+session_opts = {
+    'session.type': 'memory',
+    'session.cookie_expires': 300,
+    'session.auto': True
+}
+app = SessionMiddleware(bottle.app(), session_opts)
 
 a = auth.Auth()
 def rand():
@@ -17,12 +26,9 @@ def login_form():
 @route("/login", method="POST")
 def login_submit():
     name = request.forms.get("name")
-    passwd = request.forms.get("password")
+    password = request.forms.get("password")
     
-    sidOrNone = a.login(name,passwd)
-    if sidOrNone:
-        response.set_cookie("name", name)
-        response.set_cookie("sid", sidOrNone) #TODO: signed cookies!
+    if a.login(name, password):
         return "Logged in!"
     else:
         return "Login failed"
@@ -57,5 +63,5 @@ def asiakkaat():
     return template("possibleCustomers", hoitajat =["a", "b"], potilaat =["i", "j", "k", "h"], rand=rand)
 
 if __name__ == "__main__":
-    run(host='localhost', port=8080, debug=True)
+    run(app=app, host='localhost', port=8080, debug=True, reloader=True)
 
