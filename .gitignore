@@ -6,3 +6,4 @@ share
 __pycache__
 __config__
 .#*
+/test.db
