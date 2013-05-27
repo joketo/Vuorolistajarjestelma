@@ -2,7 +2,7 @@ import bcrypt
 from bottle import request
 
 class User(object):
-    def __init__(self, name, passwd, sid=None):
+    def __init__(self, name, password, sid=None):
         """User class, params:
         name: user name
         salt: salt for password hash :: builtins.bytes
@@ -10,7 +10,7 @@ class User(object):
         """
         self.name = name
         self.salt = bcrypt.gensalt()
-        self.pwhash = bcrypt.hashpw(passwd.encode(), self.salt)
+        self.pwhash = bcrypt.hashpw(password.encode(), self.salt)
 
 
 class Auth(object):
@@ -44,7 +44,7 @@ class Auth(object):
         s = request.environ["beaker.session"]
         s.pop("name")
 
-    def register(self, uname, passwd):
-        if uname in self.users:
+    def register(self, name, password):
+        if name in self.users:
             raise Exception("Can't make duplicate user")
-        newUser = User(uname, passwd)
+        self.users[name] = User(name, password) #voi ehkä epäonnistua?

@@ -27,7 +27,7 @@ def login_form():
 def login_submit():
     name = request.forms.get("name")
     password = request.forms.get("password")
-    
+
     if a.login(name, password):
         return "Logged in!"
     else:
@@ -35,24 +35,29 @@ def login_submit():
 
 @route("/logout")
 def logout():
-    name = request.get_cookie("name")
-    sid = request.get_cookie("sid")
-    a.logout(name, sid)
-        
+    a.logout()
 
-@route("/nah")
-def nah():
-    return """nope"""
+@route("/register")
+def register_form():
+    return template("register")
+
+@route("/register", method="POST")
+def register():
+    name = request.forms.get("name")
+    password = request.forms.get("password")
+    
+    a.register(name, password)
+    return "Registration complete"
 
 @route("/whoami")
 def whoami():
-    name = request.get_cookie("name")
-    sid = request.get_cookie("sid")
-
-    print(name,sid)
-    if a.isLogged(name, sid):
-        return template("""You are logged in as {{name}}""", name=name)
+    if a.isLogged():
+        return template("""You are logged in as {{name}}""", name=a.loggedAs())
     else: return """You are not logged in"""
+
+@route("/registered")
+def registered():
+    return str(a.users)
 
 @route("/test")
 def test():
