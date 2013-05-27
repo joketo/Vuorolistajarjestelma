@@ -3,6 +3,9 @@ from beaker.middleware import SessionMiddleware
 import bottle
 import auth
 import random
+import sqlite3
+
+conn = sqlite3.connect("test.db")
 
 session_opts = {
     'session.type': 'memory',
@@ -11,7 +14,7 @@ session_opts = {
 }
 app = SessionMiddleware(bottle.app(), session_opts)
 
-a = auth.Auth()
+a = auth.Auth(conn)
 def rand():
     return random.choice([True,False])
 
