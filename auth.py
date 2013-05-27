@@ -22,7 +22,11 @@ class Auth(object):
         """Return the name with wich the current session is logged in as"""
         s = request.environ["beaker.session"]
         c = self.db.cursor()
-        c.execute("SELECT username from users where id=?", (s["userid"],))
+        try:
+            c.execute("SELECT username from users where id=?", (s["userid"],))
+        except KeyError:
+            return None
+
         name, = c.fetchone()
         c.close()
         return name
