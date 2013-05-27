@@ -21,21 +21,21 @@ def etusivu():
 
 @route("/login")
 def login_form():
-    return template("login")
+    return template("loginForm")
 
 @route("/login", method="POST")
 def login_submit():
     name = request.forms.get("name")
     password = request.forms.get("password")
 
-    if a.login(name, password):
-        return "Logged in!"
-    else:
-        return "Login failed"
+    success = a.login(name, password)
+    return template("loginSubmit", success=success)
+        
 
 @route("/logout")
 def logout():
     a.logout()
+    return template("logout")
 
 @route("/register")
 def register_form():
@@ -51,13 +51,14 @@ def register():
 
 @route("/whoami")
 def whoami():
-    if a.isLogged():
-        return template("""You are logged in as {{name}}""", name=a.loggedAs())
-    else: return """You are not logged in"""
+    islogged = a.isLogged()
+    name = a.loggedAs()
+    return template("whoAmI", islogged=islogged, name=name)
+
 
 @route("/registered")
 def registered():
-    return str(a.users)
+    return template("registered", users = str(a.users))
 
 @route("/test")
 def test():

@@ -32,7 +32,11 @@ class Auth(object):
     def loggedAs(self):
         """Return the name with wich the current session is logged in as"""
         s = request.environ["beaker.session"]
-        return s["name"]
+        try:
+            name = s["name"]
+        except KeyError:
+            return False
+        return True
 
     def isLogged(self):
         s = request.environ["beaker.session"]
