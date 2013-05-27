@@ -25,7 +25,7 @@ class Auth(object):
         s = request.environ["beaker.session"]
         user = self.users[name]
         if user.pwhash == bcrypt.hashpw(password.encode(), user.salt):
-            s["user"] = name
+            s["name"] = name
             return True
         return False
 
@@ -34,8 +34,9 @@ class Auth(object):
         s = request.environ["beaker.session"]
         return s["name"]
 
-    def isLogged(self, uname, sid):
-        if self.loggedAs():
+    def isLogged(self):
+        s = request.environ["beaker.session"]
+        if "name" in s:
             return True
         return False
 
