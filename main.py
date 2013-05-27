@@ -61,7 +61,10 @@ def whoami():
 
 @route("/registered")
 def registered():
-    return template("registered", users = str(a.users))
+    c = conn.cursor()
+    c.execute("SELECT id, username from users")
+    users = c.fetchall()
+    return template("registered", users = str(users))
 
 @route("/test")
 def test():
