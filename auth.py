@@ -3,33 +3,27 @@ from bottle import request
 
 class Auth(object):
     """Module for authenticating users and managing sessions."""
-    def __init__(self, dbhandle):
-        self.db = dbhandle
+    def __init__(self, userbackend):
+        self.users = userbackend
 
     def login(self, name, password):
         """Logs session in as a user, throws KeyError when no such user present"""
         s = request.environ["beaker.session"]
-        c = self.db.cursor()
-        c.execute("SELECT id, salt, hash from users where username=?", (name,))
-        userid, salt, pwhash = c.fetchone()
-        c.close()
-        if pwhash == bcrypt.hashpw(password.encode(), salt):
-            s["userid"] = userid
+        user = self.users.byName(name)
+        if user.pwhash == bcrypt.hashpw(password.encode(), user.salt):
+            s["userid"] = user.userid
             return True
         return False
 
     def loggedAs(self):
         """Return the name with wich the current session is logged in as"""
         s = request.environ["beaker.session"]
-        c = self.db.cursor()
+
         try:
-            c.execute("SELECT username from users where id=?", (s["userid"],))
+            user = self.users.byId(s["userid"])
         except KeyError:
             return None
-
-        name, = c.fetchone()
-        c.close()
-        return name
+        return user.name
 
     def isLogged(self):
         s = request.environ["beaker.session"]
@@ -45,10 +39,5 @@ class Auth(object):
     def register(self, name, password):
         salt = bcrypt.gensalt()
         pwhash = bcrypt.hashpw(password.encode(), salt)
-
-        c = self.db.cursor()
-        c.execute("""INSERT INTO users (username, salt, hash)
-                  VALUES (?, ?, ?)""", (name, salt, pwhash))
-        self.db.commit()
-        c.close()
-        #TODO: handle exceptions
+        self.users.addUser(name, salt, pwhash)
+        
