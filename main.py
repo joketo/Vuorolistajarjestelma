@@ -5,7 +5,10 @@ import auth
 import random
 import sqlite3
 
+from sqlite_backend import Users
+
 conn = sqlite3.connect("test.db")
+
 
 session_opts = {
     'session.type': 'memory',
@@ -14,7 +17,7 @@ session_opts = {
 }
 app = SessionMiddleware(bottle.app(), session_opts)
 
-a = auth.Auth(conn)
+a = auth.Auth(Users("test.db"))
 def rand():
     return random.choice([True,False])
 
