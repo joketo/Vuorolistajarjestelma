@@ -13,7 +13,7 @@ conn = sqlite3.connect("test.db")
 session_opts = {
     'session.type': 'memory',
     'session.cookie_expires': 300,
-    'session.auto': True
+    'session.auto': Truek
 }
 app = SessionMiddleware(bottle.app(), session_opts)
 

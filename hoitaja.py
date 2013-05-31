@@ -5,7 +5,7 @@ class Hoitaja(object):
         self.nimi = nimi
         self.luvat = luvat
     
-    def sopiikoKaynti(kaynti):
+    def sopiikoKaynti(self, kaynti):
         for vaatimus in kaynti.vaatimukset:
             if not vaatimus in self.luvat:
                 return False
