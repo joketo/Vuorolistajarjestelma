@@ -32,14 +32,16 @@ def logout():
 
 @route("/register")
 def register_form():
-    return template("register")
+    return template("register", viesti = None)
 
 @route("/register", method="POST")
 def register():
     name = request.forms.get("name")
-    password = request.forms.get("password")
-    
-    auth.register(name, password)
+    password1 = request.forms.get("password1")
+    password2 = request.forms.get("password2")
+    if password1 != password2:
+        return template("register", viesti = "Salasanat eivät täsmää")
+    auth.register(name, password1)
     return template("rekOK")
 
 @route("/whoami")
