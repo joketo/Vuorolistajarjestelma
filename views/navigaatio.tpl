@@ -3,5 +3,5 @@
 <a href="/logout">Uloskirjaus</a>
 <a href="/whoami">WhoAmI</a>
 <a href="/registered">Rekisteröityneet</a>
-<a href="http://localhost:8080/">Home</a>
+<a href="/">Home</a>
 <p></p>
