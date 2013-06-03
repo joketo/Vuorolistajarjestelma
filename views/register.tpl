@@ -1,7 +1,7 @@
 %include header
-%include navigaatio
+<h3>Rekisteröityminen</h3>
 %if viesti:
-{{viesti}}
+<p style="color: red; font-size:12px">{{viesti}}</p>
 %end 
 <form method="POST" action="/register">
   Tunnus: <input name="name" type="text" /> <br>
@@ -9,4 +9,5 @@
   Salasana uudelleen: <input name="password2" type="password" />
   <input type="submit" value="rekisteröidy">
 </form>
+<a href="/login">Kirjaudu sisään</a>
 %include footer
