@@ -2,10 +2,13 @@
 %if viesti:
 {{viesti}}
 %end
+<h3>Tervetuloa Vuorolistajärjestelmään!</h3>
+<h2>Kirjaudu sisään</h2>
 <form method="POST" action="/login">
-  Name: <input name="name"     type="text" /><br>
-  Password: <input name="password" type="password" />
-  <input type="submit" value="Login" />
+  Tunnus: <input name="name"     type="text" /><br>
+  Salasana: <input name="password" type="password" />
+  <input type="submit" value="Kirjaudu" />
 </form>
-<a href="/register">Rekisteröidy</a>
+<p>Etkö ole rekisteröitynyt?</p>
+<a href="/register">Rekisteröidy täällä</a>
 %include footer

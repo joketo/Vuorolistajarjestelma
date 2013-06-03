@@ -1,8 +1,8 @@
 %include header
 %include navigaatio 
 <form method="POST" action="/register">
-  Name: <input name="name" type="text" /> <br>
-  Password: <input name="password" type="text" />
-  <input type="submit" value="register">
+  Tunnus: <input name="name" type="text" /> <br>
+  Salasana: <input name="password" type="password" />
+  <input type="submit" value="rekisteröidy">
 </form>
 %include footer
