@@ -1,5 +1,7 @@
 import sqlite3
+import json
 from user import User
+from hoitaja import Hoitaja
 
 class Users(object):
     def __init__(self, dbconnection):
@@ -27,3 +29,33 @@ class Users(object):
         self.conn.commit()
         c.close()
 
+class Hoitajat(object):
+    """Luokka Hoitaja-olioiden hakuun ja lisäykseen tietokannasta"""
+    def __init__(self, tkyhteys):
+        self.yhteys = tkyhteys
+
+    def idnMukaan(self, hoitsuid):
+        c = self.conn.cursor()
+        c.execute("SELECT name, perms from hoitajat where id=?",(hoitsuid,))
+        nimi, luvat = c.fetchone()
+        luvat = json.reads(luvat)
+        c.close()
+
+    def nimenMukaan(self, nimi):
+        c = self.conn.cursor()
+        c.execute("SELECT id, perms from hoitajat where name=?", (nimi,))
+        hoitsuid, luvat = c.fetchone()
+        luvat = json.reads(luvat)
+        c.close()
+
+        return Hoitaja(hoitsuid, nimi, luvat)
+
+    def uusi(self, nimi, luvat):
+        c = self.conn.cursor()
+        c.execute("""INSERT INTO hoitajat (name, perms)
+                     VALUES (?,?)""", (nimi, json.dumps(luvat)))
+        c.commit()
+        c.close()
+
+
+        
