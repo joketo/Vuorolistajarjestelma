@@ -2,8 +2,8 @@ import sqlite3
 from user import User
 
 class Users(object):
-    def __init__(self, dbfile):
-        self.conn = sqlite3.connect(dbfile)
+    def __init__(self, dbconnection):
+        self.conn = dbconnection
 
     def byName(self, name):
         c = self.conn.cursor()
