@@ -1,4 +1,4 @@
-from bottle import route, run, template, response, request
+from bottle import route, run, template, response, request, redirect
 from main import auth, conn
 
 #testisyötettä formeille
@@ -7,11 +7,13 @@ def rand():
 
 @route("/")
 def etusivu():
+    if not auth.isLogged():
+        redirect("/login")
     return template("front")
 
 @route("/login")
 def login_form():
-    return template("loginForm")
+    return template("loginForm", viesti = None)
 
 @route("/login", method="POST")
 def login_submit():
@@ -19,7 +21,9 @@ def login_submit():
     password = request.forms.get("password")
 
     success = auth.login(name, password)
-    return template("loginSubmit", success=success)
+    if not success:
+        return template("loginForm", viesti = "Sisäänkirjautuminen epäonnistui")
+    redirect("/")
 
 @route("/logout")
 def logout():
@@ -36,7 +40,7 @@ def register():
     password = request.forms.get("password")
     
     auth.register(name, password)
-    return "Registration complete"
+    return template("rekOK")
 
 @route("/whoami")
 def whoami():
