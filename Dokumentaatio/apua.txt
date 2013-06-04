@@ -1,0 +1,14 @@
+Images work like this:
+<img src="website URL" />
+
+Links work like this:
+<a href="website URL"></a>
+
+create an ordered list using the <ol> tag.
+list items should be wrapped (i.e. surrounded) by <li> tags
+
+aina ennen töiden aloittamista:
+source bin/activate
+
+<h2 style="color: green; font-size:12px">
+
