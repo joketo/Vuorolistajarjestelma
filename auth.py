@@ -13,7 +13,7 @@ class Auth(object):
         if user.pwhash == bcrypt.hashpw(password.encode(), user.salt):
             s["userid"] = user.userid
             return True
-        return False
+        raise KeyError("Wrong password")
 
     def loggedAs(self):
         """Return the name with wich the current session is logged in as"""

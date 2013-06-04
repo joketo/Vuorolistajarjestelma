@@ -1,5 +1,6 @@
 from bottle import route, run, template, response, request, redirect
 from main import auth, conn
+from sqlite3 import IntegrityError
 
 #testisyötettä formeille
 def rand():
@@ -19,9 +20,10 @@ def login_form():
 def login_submit():
     name = request.forms.get("name")
     password = request.forms.get("password")
-
-    success = auth.login(name, password)
-    if not success:
+    
+    try:
+        auth.login(name, password)
+    except:
         return template("loginForm", viesti = "Sisäänkirjautuminen epäonnistui")
     redirect("/")
 
@@ -32,14 +34,20 @@ def logout():
 
 @route("/register")
 def register_form():
-    return template("register")
+    return template("register", viesti = None)
 
 @route("/register", method="POST")
 def register():
     name = request.forms.get("name")
-    password = request.forms.get("password")
+    password1 = request.forms.get("password1")
+    password2 = request.forms.get("password2")
     
-    auth.register(name, password)
+    if password1 != password2:
+        return template("register", viesti = "Salasanat eivät täsmää")
+    try:
+        auth.register(name, password1)
+    except IntegrityError:
+        return template("register", viesti = "Valitsemasi käyttäjätunnus on jo käytössä")
     return template("rekOK")
 
 @route("/whoami")
