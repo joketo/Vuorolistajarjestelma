@@ -1,4 +1,4 @@
 %include header
-%include navigaatio
-Olet kirjautunut ulos.
+Olet kirjautunut ulos. </br>
+<a href="/">Etusivulle</a>
 %include footer

@@ -9,5 +9,6 @@
   Salasana uudelleen: <input name="password2" type="password" />
   <input type="submit" value="rekisteröidy">
 </form>
-<a href="/login">Kirjaudu sisään</a>
+
+<a href="/">Etusivulle</a>
 %include footer
