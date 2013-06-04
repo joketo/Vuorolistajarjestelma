@@ -31,6 +31,7 @@ class Users(object):
 
 class Hoitajat(object):
     """Luokka Hoitaja-olioiden hakuun ja lisäykseen tietokannasta"""
+    #TODO: luvat pitää nyt hakea lupataulusta
     def __init__(self, tkyhteys):
         self.yhteys = tkyhteys
 
