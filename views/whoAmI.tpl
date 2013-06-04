@@ -1,8 +1,8 @@
 %include header
 %include navigaatio
 %if islogged:
-You are logged in as {{name}}
+Olet kirjautunut sisään tunnuksella {{name}}
 %else:
-You are not logged in
+Et ole kirjautuneena sisään.
 %end
 %include footer
