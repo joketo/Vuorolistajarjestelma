@@ -37,14 +37,14 @@ class Hoitajat(object):
 
     def idnMukaan(self, hoitsuid):
         c = self.conn.cursor()
-        c.execute("SELECT name, perms from hoitajat where id=?",(hoitsuid,))
+        c.execute("SELECT name from hoitajat where id=?",(hoitsuid,))
         nimi, luvat = c.fetchone()
         luvat = json.reads(luvat)
         c.close()
 
     def nimenMukaan(self, nimi):
         c = self.conn.cursor()
-        c.execute("SELECT id, perms from hoitajat where name=?", (nimi,))
+        c.execute("SELECT id, from hoitajat where name=?", (nimi,))
         hoitsuid, luvat = c.fetchone()
         luvat = json.reads(luvat)
         c.close()
@@ -53,10 +53,25 @@ class Hoitajat(object):
 
     def uusi(self, nimi, luvat):
         c = self.conn.cursor()
-        c.execute("""INSERT INTO hoitajat (name, perms)
-                     VALUES (?,?)""", (nimi, json.dumps(luvat)))
+        c.execute("""INSERT INTO hoitajat (name)
+                     VALUES (?)""", (nimi,))
         c.commit()
         c.close()
 
+    def haeLuvat(self, hoitajaId):
+        c = self.conn.cursor()
+        c.execute("""SELECT lupa from hoitajaluvat
+                     where hoitajaid = ?""", (hoitajaId,))
+        luvat = c.fetchall()
+        c.close()
+        return luvat
+
+    def luoLuvat(self, hoitajaId, luvat):
+        c = self.conn.cursor()
+        for l in luvat:
+            c.execute("""INSERT int hoitajaluvat (hoitajaid, lupa)
+                         values (?,?)""", (hoitajaId, l))
+        c.commit()
+        c.close()
 
         
