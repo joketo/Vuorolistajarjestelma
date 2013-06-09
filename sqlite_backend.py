@@ -74,4 +74,13 @@ class Hoitajat(object):
         c.commit()
         c.close()
 
+    def kaikkiHoitajat(self):
+        c = self.conn.cursor()
+        c.execute("""SELECT name from hoitajat""")
+        hoitajat = c.fetchall()
+        c.close()
+        return hoitajat
+        
+                      
+
         
