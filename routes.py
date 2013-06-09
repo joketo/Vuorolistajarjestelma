@@ -67,7 +67,15 @@ def registered():
 @route("/test")
 def test():
     return template("test", nimet=["a", "b", "c"], rand=rand)
+    
+@route("/hallinta")
+def hallinta():
+    return template("hallinta")
 
 @route("/hoitajat")
 def hoitajat():
     return template("hoitajat")
+    
+@route("/asiakkaat")
+def asiakkaat():
+    return template("asiakkaat")

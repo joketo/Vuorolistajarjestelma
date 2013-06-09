@@ -14,7 +14,7 @@ conn = sqlite3.connect("test.db")
 # beaker-asetukset
 session_opts = {
     'session.type': 'memory',
-    'session.cookie_expires': 300,
+    'session.cookie_expires': 2000,
     'session.auto': True
 }
 app = SessionMiddleware(bottle.app(), session_opts)
