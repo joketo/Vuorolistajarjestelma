@@ -81,7 +81,7 @@ def hoitajat_get():
 def hoitajat_post():
     nimi = request.forms.get("nimi")
     luvat = request.forms.get("luvat")
-    hoitajat.uusi(nimi, luvat)
+    hoitajat.uusi(nimi, luvat.split(","))
     redirect("/hoitajat")
     
     

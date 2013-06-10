@@ -3,6 +3,8 @@ import json
 from user import User
 from hoitaja import Hoitaja
 
+#TODO: tietokantakursorijuttujen siistiminen dekoraattorilla
+
 class Users(object):
     def __init__(self, dbconnection):
         self.conn = dbconnection
@@ -35,28 +37,44 @@ class Hoitajat(object):
     def __init__(self, tkyhteys):
         self.conn = tkyhteys
 
-    def idnMukaan(self, hoitsuid):
+    def hae(self, hoitajaid=None, nimi=None):
+        """Hakee tietokannasta hoitajan joko nimen tai id:n perusteella"""
+        if not hoitajaid and not nimi:
+            raise TypeError("hae tarvitsee argumentin hoitajaid tai nimi")
+
         c = self.conn.cursor()
-        c.execute("SELECT nimi from hoitajat where id=?",(hoitsuid,))
-        nimi, luvat = c.fetchone()
-        luvat = json.reads(luvat)
-        c.close()
+        if hoitajaid:
+            c.execute("SELECT rowid, nimi from hoitajat where id=?",(hoitsuid,))
+        else:
+            c.execute("SELECT rowid, nimi from hoitajat where name=?", (nimi,))
+        hoitajaid, nimi = c.fetchone()
+        luvat = haeLuvat(hoitajaid)
+        return Hoitaja(hoitajaid, nimi, luvat)
+
+    def idnMukaan(self, hoitajaid):
+        return self.hae(hoitajaid=hoitajaid)
 
     def nimenMukaan(self, nimi):
-        c = self.conn.cursor()
-        c.execute("SELECT id, from hoitajat where name=?", (nimi,))
-        hoitsuid, luvat = c.fetchone()
-        luvat = json.reads(luvat)
-        c.close()
+        return self.hae(nimi=nimi)
 
-        return Hoitaja(hoitsuid, nimi, luvat)
+
+    def kaikkiHoitajat(self):
+        c = self.conn.cursor()
+        c.execute("""SELECT id from hoitajat""")
+        hoitajaidt = c.fetchall()
+        c.close()
+        #TODO: onko tämä hidasta?
+        return [hae(hid[0]) for hid in hoitajat]
 
     def uusi(self, nimi, luvat):
         c = self.conn.cursor()
         c.execute("""INSERT INTO hoitajat (nimi)
                      VALUES (?)""", (nimi,))
+        c.execute("SELECT id from hoitajat where name=?", (nimi,))
+        hoitajaId = c.fetchone()
         c.close()
         self.conn.commit()
+        luoLuvat(hoitajaId, luvat)
 
     def haeLuvat(self, hoitajaId):
         c = self.conn.cursor()
@@ -74,12 +92,7 @@ class Hoitajat(object):
         c.commit()
         c.close()
 
-    def kaikkiHoitajat(self):
-        c = self.conn.cursor()
-        c.execute("""SELECT nimi from hoitajat""")
-        hoitajat = c.fetchall()
-        c.close()
-        return map(lambda a: a[0], hoitajat)
+        
 
 class Asiakkaat(object):
     """Luokka asiakkaiden räpläykseen tietokantaan/kannasta"""
