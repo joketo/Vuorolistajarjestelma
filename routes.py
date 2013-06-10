@@ -89,3 +89,8 @@ def hoitajat_post():
 @route("/asiakkaat")
 def asiakkaat():
     return template("asiakkaat")
+    
+@route("/hoitovuorot")
+def hoitovuorot():
+    testiarvot = {"Milla-hoitsu":["Kiiranen", "Loppi", "Aatos", "Mölläs"], "Kalle-hoitsu":["Kärttynen", "Kolho", "Pieniniemi"]}
+    return template("hoitovuorot", hoitajat = testiarvot)
