@@ -33,11 +33,11 @@ def logout():
     return template("logout")
 
 @route("/register")
-def register_form():
+def register_get():
     return template("register", viesti = None)
 
 @route("/register", method="POST")
-def register():
+def register_post():
     name = request.forms.get("name")
     password1 = request.forms.get("password1")
     password2 = request.forms.get("password2")
@@ -82,8 +82,7 @@ def hoitajat_post():
     nimi = request.forms.get("nimi")
     luvat = request.forms.get("luvat")
     hoitajat.uusi(nimi, luvat)
-    hoitsut = hoitajat.kaikkiHoitajat()
-    return template("hoitajat", hoita =hoitsut)
+    redirect("/hoitajat")
     
     
 @route("/asiakkaat")

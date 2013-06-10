@@ -79,7 +79,7 @@ class Hoitajat(object):
         c.execute("""SELECT nimi from hoitajat""")
         hoitajat = c.fetchall()
         c.close()
-        return hoitajat
+        return map(lambda a: a[0], hoitajat)
 
 class Asiakkaat(object):
     """Luokka asiakkaiden räpläykseen tietokantaan/kannasta"""

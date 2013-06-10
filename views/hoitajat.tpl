@@ -1,5 +1,5 @@
 %include header
-%for h in hoita:
+%for h in hoitajat:
 {{h}} <br>
 %end
 <form method="POST" action="/hoitajat">
