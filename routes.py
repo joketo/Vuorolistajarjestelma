@@ -73,15 +73,17 @@ def hallinta():
     return template("hallinta")
 
 @route("/hoitajat")
-def hoitajat():
-    return template("hoitajat", hoita = hoitajat.kaikkiHoitajat())
+def hoitajat_get():
+    hoitsut = hoitajat.kaikkiHoitajat()
+    return template("hoitajat", hoita =hoitsut)
     
 @route("/hoitajat", method="POST")
-def hoitajat_submit():
+def hoitajat_post():
     nimi = request.forms.get("nimi")
     luvat = request.forms.get("luvat")
     hoitajat.uusi(nimi, luvat)
-    return template("hoitajat", hoita = hoitajat.kaikkiHoitajat())
+    hoitsut = hoitajat.kaikkiHoitajat()
+    return template("hoitajat", hoita =hoitsut)
     
     
 @route("/asiakkaat")

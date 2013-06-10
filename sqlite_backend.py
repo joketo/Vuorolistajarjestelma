@@ -33,11 +33,11 @@ class Hoitajat(object):
     """Luokka Hoitaja-olioiden hakuun ja lisäykseen tietokannasta"""
     #TODO: luvat pitää nyt hakea lupataulusta
     def __init__(self, tkyhteys):
-        self.yhteys = tkyhteys
+        self.conn = tkyhteys
 
     def idnMukaan(self, hoitsuid):
         c = self.conn.cursor()
-        c.execute("SELECT name from hoitajat where id=?",(hoitsuid,))
+        c.execute("SELECT nimi from hoitajat where id=?",(hoitsuid,))
         nimi, luvat = c.fetchone()
         luvat = json.reads(luvat)
         c.close()
@@ -53,10 +53,10 @@ class Hoitajat(object):
 
     def uusi(self, nimi, luvat):
         c = self.conn.cursor()
-        c.execute("""INSERT INTO hoitajat (name)
+        c.execute("""INSERT INTO hoitajat (nimi)
                      VALUES (?)""", (nimi,))
-        c.commit()
         c.close()
+        self.conn.commit()
 
     def haeLuvat(self, hoitajaId):
         c = self.conn.cursor()
@@ -76,10 +76,64 @@ class Hoitajat(object):
 
     def kaikkiHoitajat(self):
         c = self.conn.cursor()
-        c.execute("""SELECT name from hoitajat""")
+        c.execute("""SELECT nimi from hoitajat""")
         hoitajat = c.fetchall()
         c.close()
         return hoitajat
+
+class Asiakkaat(object):
+    """Luokka asiakkaiden räpläykseen tietokantaan/kannasta"""
+
+    def __init__(self, tkyhteys):
+        self.conn = tkyhteys
+
+    def idnMukaan(self, hoitsuid):
+        c = self.conn.cursor()
+        c.execute("SELECT nimi from asiakkaat where id=?",(hoitsuid,))
+        nimi, luvat = c.fetchone()
+        luvat = json.reads(luvat)
+        c.close()
+
+    def nimenMukaan(self, nimi):
+        c = self.conn.cursor()
+        c.execute("SELECT id, from asiakkaat where name=?", (nimi,))
+        hoitsuid, luvat = c.fetchone()
+        luvat = json.reads(luvat)
+        c.close()
+
+        return Hoitaja(hoitsuid, nimi, luvat)
+
+    def uusi(self, nimi, luvat):
+        c = self.conn.cursor()
+        c.execute("""INSERT INTO asiakkaat (nimi)
+                     VALUES (?)""", (nimi,))
+        c.close()
+        self.conn.commit()
+
+    def haeLuvat(self, hoitajaId):
+        c = self.conn.cursor()
+        c.execute("""SELECT lupa from hoitajaluvat
+                     where hoitajaid = ?""", (hoitajaId,))
+        luvat = c.fetchall()
+        c.close()
+        return luvat
+
+    def luoLuvat(self, hoitajaId, luvat):
+        c = self.conn.cursor()
+        for l in luvat:
+            c.execute("""INSERT int hoitajaluvat (hoitajaid, lupa)
+                         values (?,?)""", (hoitajaId, l))
+        c.commit()
+        c.close()
+
+    def kaikkiHoitajat(self):
+        c = self.conn.cursor()
+        c.execute("""SELECT nimi from hoitajat""")
+        hoitajat = c.fetchall()
+        c.close()
+        return hoitajat
+
+        
         
                       
 
