@@ -64,17 +64,13 @@ def registered():
     users = c.fetchall()
     return template("registered", users = str(users))
 
-@route("/test")
-def test():
-    return template("test", nimet=["a", "b", "c"], rand=rand)
-    
 @route("/hallinta")
 def hallinta():
     return template("hallinta")
 
 @route("/hoitajat")
 def hoitajat_get():
-    hoitsut = hoitajat.kaikkiHoitajat()
+    hoitsut = hoitajat.kaikki()
     return template("hoitajat", hoitajat =hoitsut)
     
 @route("/hoitajat", method="POST")
@@ -98,5 +94,14 @@ def asiakkaat_post():
     
 @route("/hoitovuorot")
 def hoitovuorot():
-    testiarvot = {"Milla-hoitsu":["Kiiranen", "Loppi", "Aatos", "Mölläs"], "Kalle-hoitsu":["Kärttynen", "Kolho", "Pieniniemi"]}
-    return template("hoitovuorot", hoitajat = testiarvot)
+    # TODO: luo hoitovuorot jossain muualla
+    # jakaa hoitovuoron mahdollisista hoitajista aina sille, jolla on
+    # vähiten käyntejä
+    hoitokerrat = {h:0 for h in map(lambda h: h.nimi, hoitajat.kaikki())}
+    hoitovuorot = {h:[] for h in  map(lambda h: h.nimi, hoitajat.kaikki())}
+    for a in asiakkaat.kaikki():
+        sopivat = hoitajat.haeSopivat(a.luvat)
+        hoitaja = min(sopivat, key = lambda h: hoitokerrat[h.nimi])
+        hoitovuorot[hoitaja.nimi].append(a.nimi)
+
+    return template("hoitovuorot", hoitajat = hoitovuorot)
