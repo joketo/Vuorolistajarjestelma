@@ -46,17 +46,10 @@ class Hoitajat(object):
         if hoitajaid:
             c.execute("SELECT rowid, nimi from hoitajat where rowid=?",(hoitajaid,))
         else:
-            c.execute("SELECT rowid, nimi from hoitajat where name=?", (nimi,))
+            c.execute("SELECT rowid, nimi from hoitajat where nimi=?", (nimi,))
         hoitajaid, nimi = c.fetchone()
         luvat = self.haeLuvat(hoitajaid)
         return Hoitaja(hoitajaid, nimi, luvat)
-
-    def idnMukaan(self, hoitajaid):
-        return self.hae(hoitajaid=hoitajaid)
-
-    def nimenMukaan(self, nimi):
-        return self.hae(nimi=nimi)
-
 
     def kaikkiHoitajat(self):
         c = self.conn.cursor()
@@ -92,59 +85,59 @@ class Hoitajat(object):
         self.conn.commit()
         c.close()
 
-        
-
 class Asiakkaat(object):
     """Luokka asiakkaiden räpläykseen tietokantaan/kannasta"""
-
     def __init__(self, tkyhteys):
         self.conn = tkyhteys
 
-    def idnMukaan(self, hoitsuid):
-        c = self.conn.cursor()
-        c.execute("SELECT nimi from asiakkaat where id=?",(hoitsuid,))
-        nimi, luvat = c.fetchone()
-        luvat = json.reads(luvat)
-        c.close()
+    def hae(self, asiakasid=None, nimi=None):
+        """Hakee tietokannasta asiakkaan joko nimen tai id:n perusteella"""
+        if not asiakasaid and not nimi:
+            raise TypeError("hae tarvitsee argumentin asiakasid tai nimi")
 
-    def nimenMukaan(self, nimi):
         c = self.conn.cursor()
-        c.execute("SELECT id, from asiakkaat where name=?", (nimi,))
-        hoitsuid, luvat = c.fetchone()
-        luvat = json.reads(luvat)
-        c.close()
+        if hoitajaid:
+            c.execute("SELECT rowid, nimi from asiakkaat where rowid=?",(hoitajaid,))
+        else:
+            c.execute("SELECT rowid, nimi from asiakkaat where nimi=?", (nimi,))
+        asiakasid, nimi = c.fetchone()
+        luvat = self.haeLuvat(asiakas)
+        return Asiakas(asiakasid, nimi, luvat)
 
-        return Hoitaja(hoitsuid, nimi, luvat)
+    def kaikki(self):
+        c = self.conn.cursor()
+        c.execute("""SELECT rowid from asiakkaat""")
+        asiakasidt = c.fetchall()
+        c.close()
+        #TODO: onko tämä hidasta?
+        return [self.hae(hid[0]) for hid in asiakasidt]
 
     def uusi(self, nimi, luvat):
         c = self.conn.cursor()
         c.execute("""INSERT INTO asiakkaat (nimi)
                      VALUES (?)""", (nimi,))
+        c.execute("SELECT rowid from asiakkaat where nimi=?", (nimi,))
+        asiakasId = c.fetchone()
         c.close()
         self.conn.commit()
+        self.luoLuvat(asiakasId[0], luvat)
 
-    def haeLuvat(self, hoitajaId):
+    def haeLuvat(self, asiakasId):
         c = self.conn.cursor()
-        c.execute("""SELECT lupa from hoitajaluvat
-                     where hoitajaid = ?""", (hoitajaId,))
+        c.execute("""SELECT lupa from asiakasluvat
+                     where asiakasid = ?""", (asiakasId,))
         luvat = c.fetchall()
         c.close()
-        return luvat
+        return map(lambda a: a[0], luvat)
 
-    def luoLuvat(self, hoitajaId, luvat):
+    def luoLuvat(self, asiakasId, luvat):
         c = self.conn.cursor()
         for l in luvat:
-            c.execute("""INSERT int hoitajaluvat (hoitajaid, lupa)
-                         values (?,?)""", (hoitajaId, l))
-        c.commit()
+            c.execute("""INSERT into asiakasluvat (asiakasid, lupa)
+                         values (?,?)""", (asiakasId, l))
+        self.conn.commit()
         c.close()
 
-    def kaikkiHoitajat(self):
-        c = self.conn.cursor()
-        c.execute("""SELECT nimi from hoitajat""")
-        hoitajat = c.fetchall()
-        c.close()
-        return hoitajat
 
         
         
