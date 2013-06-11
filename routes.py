@@ -77,7 +77,9 @@ def hoitajat_get():
 def hoitajat_post():
     nimi = request.forms.get("nimi")
     luvat = request.forms.get("luvat")
-    hoitajat.uusi(nimi, luvat.split(","))
+    luvat = luvat.split(",")
+    luvat = [l.strip() for l in luvat]
+    hoitajat.uusi(nimi, luvat)
     redirect("/hoitajat")
 
 @route("/asiakkaat")
@@ -88,7 +90,9 @@ def asiakkaat_get():
 def asiakkaat_post():
     nimi = request.forms.get("nimi")
     luvat = request.forms.get("luvat")
-    asiakkaat.uusi(nimi, luvat.split(","))
+    luvat = luvat.split(",")
+    luvat = [l.strip() for l in luvat]
+    asiakkaat.uusi(nimi, luvat)
     redirect("/asiakkaat")
 
     
