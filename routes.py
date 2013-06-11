@@ -18,8 +18,8 @@ def login_form():
 
 @route("/login", method="POST")
 def login_submit():
-    name = request.forms.get("name")
-    password = request.forms.get("password")
+    name = request.forms.getunicode("name")
+    password = request.forms.getunicode("password")
     
     try:
         auth.login(name, password)
@@ -38,9 +38,9 @@ def register_get():
 
 @route("/register", method="POST")
 def register_post():
-    name = request.forms.get("name")
-    password1 = request.forms.get("password1")
-    password2 = request.forms.get("password2")
+    name = request.forms.getunicode("name")
+    password1 = request.forms.getunicode("password1")
+    password2 = request.forms.getunicode("password2")
     
     if password1 != password2:
         return template("register", viesti = "Salasanat eivät täsmää")
@@ -75,11 +75,12 @@ def hoitajat_get():
     
 @route("/hoitajat", method="POST")
 def hoitajat_post():
-    nimi = request.forms.get("nimi")
-    luvat = request.forms.get("luvat")
+    nimi = request.forms.getunicode("nimi")
+    luvat = request.forms.getunicode("luvat")
     luvat = luvat.split(",")
     luvat = [l.strip() for l in luvat]
     hoitajat.uusi(nimi, luvat)
+    print(type(nimi), nimi, luvat)
     redirect("/hoitajat")
 
 @route("/asiakkaat")
@@ -88,8 +89,8 @@ def asiakkaat_get():
 
 @route("/asiakkaat", method="POST")
 def asiakkaat_post():
-    nimi = request.forms.get("nimi")
-    luvat = request.forms.get("luvat")
+    nimi = request.forms.getunicode("nimi")
+    luvat = request.forms.getunicode("luvat")
     luvat = luvat.split(",")
     luvat = [l.strip() for l in luvat]
     asiakkaat.uusi(nimi, luvat)
