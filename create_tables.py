@@ -18,6 +18,10 @@ def create_hoitsut(dbname):
     usedb(dbname, """CREATE TABLE hoitajat
                      (nimi text unique not null)""")
 
+def create_asiakkaat(dbname):
+    usedb(dbname, """CREATE TABLE asiakkaat
+                     (nimi text unique not null)""")
+
 def create_kaynnit(dbname):
     usedb(dbname, """CREATE TABLE kaynnit
                      (asiakas text not null, vaatimukset blob, kesto text, hoitaja text)""")
@@ -38,6 +42,7 @@ def create_asiakasluvat(dbname):
 db = "test.db"
 create_users(db)
 create_hoitsut(db)
+create_asiakkaat(db)
 create_kaynnit(db)
 #create_luvat(db)
 create_hoitajaluvat(db)
