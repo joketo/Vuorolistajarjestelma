@@ -4,11 +4,14 @@ class Hoitaja(object):
         self.hoitsuid = hoitsuid
         self.nimi = nimi
         self.luvat = luvat
-    
-    def sopiikoKaynti(self, kaynti):
-        for vaatimus in kaynti.vaatimukset:
-            if not vaatimus in self.luvat:
+
+    def onkoLuvat(self, luvat):
+        for lupa in luvat:
+            if not lupa in self.luvat:
                 return False
         return True
+    
+    def sopiikoKaynti(self, kaynti):
+        return onkoLuvat(kaynti.vaatimukset)
 
         
