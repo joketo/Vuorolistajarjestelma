@@ -107,6 +107,7 @@ def hoitovuorot():
     for a in asiakkaat.kaikki():
         sopivat = hoitajat.haeSopivat(a.luvat)
         hoitaja = min(sopivat, key = lambda h: hoitokerrat[h.nimi])
+        hoitokerrat[hoitaja.nimi]+=1
         hoitovuorot[hoitaja.nimi].append(a.nimi)
 
     return template("hoitovuorot", hoitajat = hoitovuorot)
