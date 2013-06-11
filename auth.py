@@ -16,7 +16,7 @@ class Auth(object):
         raise KeyError("Wrong password")
 
     def loggedAs(self):
-        """Return the name with wich the current session is logged in as"""
+        """Return the name with which the current session is logged in as"""
         s = request.environ["beaker.session"]
 
         try:

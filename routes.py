@@ -96,7 +96,6 @@ def asiakkaat_post():
     asiakkaat.uusi(nimi, luvat)
     redirect("/asiakkaat")
 
-    
 @route("/hoitovuorot")
 def hoitovuorot():
     # TODO: luo hoitovuorot jossain muualla
