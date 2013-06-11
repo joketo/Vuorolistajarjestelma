@@ -4,16 +4,17 @@ import bottle
 import random
 import sqlite3
 
-from sqlite_backend import Hoitajat
+from sqlite_backend import Hoitajat, Asiakkaat
 
 from auth import Auth
 import routes
 
 from sqlite_backend import Users
 
+# TODO: näille jutuille ehkä pitäisi keksiä uusi paikka
 conn = sqlite3.connect("test.db")
-
 hoitajat = Hoitajat(conn)
+asiakkaat = Asiakkaat(conn)
 
 # beaker-asetukset
 session_opts = {

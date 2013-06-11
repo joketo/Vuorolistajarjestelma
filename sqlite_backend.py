@@ -96,8 +96,8 @@ class Asiakkaat(object):
             raise TypeError("hae tarvitsee argumentin asiakasid tai nimi")
 
         c = self.conn.cursor()
-        if hoitajaid:
-            c.execute("SELECT rowid, nimi from asiakkaat where rowid=?",(hoitajaid,))
+        if asiakasid:
+            c.execute("SELECT rowid, nimi from asiakkaat where rowid=?",(asiakasid,))
         else:
             c.execute("SELECT rowid, nimi from asiakkaat where nimi=?", (nimi,))
         asiakasid, nimi = c.fetchone()

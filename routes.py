@@ -1,5 +1,5 @@
 from bottle import route, run, template, response, request, redirect
-from main import auth, conn, hoitajat
+from main import auth, conn, hoitajat, asiakkaat
 from sqlite3 import IntegrityError
 
 #testisyötettä formeille
@@ -83,11 +83,18 @@ def hoitajat_post():
     luvat = request.forms.get("luvat")
     hoitajat.uusi(nimi, luvat.split(","))
     redirect("/hoitajat")
-    
-    
+
 @route("/asiakkaat")
-def asiakkaat():
-    return template("asiakkaat")
+def asiakkaat_get():
+    return template("asiakkaat", asiakkaat=asiakkaat.kaikki())
+
+@route("/asiakkaat", method="POST")
+def asiakkaat_post():
+    nimi = request.forms.get("nimi")
+    luvat = request.forms.get("luvat")
+    asiakkaat.uusi(nimi, luvat.split(","))
+    redirect("/asiakkaat")
+
     
 @route("/hoitovuorot")
 def hoitovuorot():
