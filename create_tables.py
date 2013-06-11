@@ -26,10 +26,6 @@ def create_kaynnit(dbname):
     usedb(dbname, """CREATE TABLE kaynnit
                      (asiakas text not null, vaatimukset blob, kesto text, hoitaja text)""")
 
-# turha?
-def create_luvat(dbname):
-    usedb(dbname, """CREATE TABLE luvat
-                     (lupa text unique)""")
 
 def create_hoitajaluvat(dbname):
     usedb(dbname, """CREATE TABLE hoitajaluvat
@@ -44,6 +40,5 @@ create_users(db)
 create_hoitsut(db)
 create_asiakkaat(db)
 create_kaynnit(db)
-#create_luvat(db)
 create_hoitajaluvat(db)
 create_asiakasluvat(db)

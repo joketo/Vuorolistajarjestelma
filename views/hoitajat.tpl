@@ -8,7 +8,7 @@
     <input type="submit" value="luo uusi" />
   </form>
 
-</p><p style = "color:green">Kantaan talletetut hoitajat:</p>
+<p style = "color:green">Kantaan talletetut hoitajat:</p>
 <p>
   %for h in hoitajat:
   {{h.nimi + ": " + ", ".join(h.luvat)}}<br>
