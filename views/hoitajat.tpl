@@ -1,6 +1,6 @@
 %include header
 %for h in hoitajat:
-{{h}} <br>
+{{h.nimi + ": " + ",".join(h.luvat)}} <br>
 %end
 <form method="POST" action="/hoitajat">
   Nimi: <input name="nimi"     type="text" /><br>

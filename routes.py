@@ -75,7 +75,7 @@ def hallinta():
 @route("/hoitajat")
 def hoitajat_get():
     hoitsut = hoitajat.kaikkiHoitajat()
-    return template("hoitajat", hoita =hoitsut)
+    return template("hoitajat", hoitajat =hoitsut)
     
 @route("/hoitajat", method="POST")
 def hoitajat_post():

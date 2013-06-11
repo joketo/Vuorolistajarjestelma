@@ -44,11 +44,11 @@ class Hoitajat(object):
 
         c = self.conn.cursor()
         if hoitajaid:
-            c.execute("SELECT rowid, nimi from hoitajat where id=?",(hoitsuid,))
+            c.execute("SELECT rowid, nimi from hoitajat where rowid=?",(hoitajaid,))
         else:
             c.execute("SELECT rowid, nimi from hoitajat where name=?", (nimi,))
         hoitajaid, nimi = c.fetchone()
-        luvat = haeLuvat(hoitajaid)
+        luvat = self.haeLuvat(hoitajaid)
         return Hoitaja(hoitajaid, nimi, luvat)
 
     def idnMukaan(self, hoitajaid):
@@ -60,21 +60,21 @@ class Hoitajat(object):
 
     def kaikkiHoitajat(self):
         c = self.conn.cursor()
-        c.execute("""SELECT id from hoitajat""")
+        c.execute("""SELECT rowid from hoitajat""")
         hoitajaidt = c.fetchall()
         c.close()
         #TODO: onko tämä hidasta?
-        return [hae(hid[0]) for hid in hoitajat]
+        return [self.hae(hid[0]) for hid in hoitajaidt]
 
     def uusi(self, nimi, luvat):
         c = self.conn.cursor()
         c.execute("""INSERT INTO hoitajat (nimi)
                      VALUES (?)""", (nimi,))
-        c.execute("SELECT id from hoitajat where name=?", (nimi,))
+        c.execute("SELECT rowid from hoitajat where nimi=?", (nimi,))
         hoitajaId = c.fetchone()
         c.close()
         self.conn.commit()
-        luoLuvat(hoitajaId, luvat)
+        self.luoLuvat(hoitajaId[0], luvat)
 
     def haeLuvat(self, hoitajaId):
         c = self.conn.cursor()
@@ -82,14 +82,14 @@ class Hoitajat(object):
                      where hoitajaid = ?""", (hoitajaId,))
         luvat = c.fetchall()
         c.close()
-        return luvat
+        return map(lambda a: a[0], luvat)
 
     def luoLuvat(self, hoitajaId, luvat):
         c = self.conn.cursor()
         for l in luvat:
-            c.execute("""INSERT int hoitajaluvat (hoitajaid, lupa)
+            c.execute("""INSERT into hoitajaluvat (hoitajaid, lupa)
                          values (?,?)""", (hoitajaId, l))
-        c.commit()
+        self.conn.commit()
         c.close()
 
         
