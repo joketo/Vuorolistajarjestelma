@@ -2,6 +2,7 @@ import sqlite3
 import json
 from user import User
 from hoitaja import Hoitaja
+from asiakas import Asiakas
 
 #TODO: tietokantakursorijuttujen siistiminen dekoraattorilla
 
@@ -51,7 +52,7 @@ class Hoitajat(object):
         luvat = self.haeLuvat(hoitajaid)
         return Hoitaja(hoitajaid, nimi, luvat)
 
-    def kaikkiHoitajat(self):
+    def kaikki(self):
         c = self.conn.cursor()
         c.execute("""SELECT rowid from hoitajat""")
         hoitajaidt = c.fetchall()
@@ -68,6 +69,12 @@ class Hoitajat(object):
         c.close()
         self.conn.commit()
         self.luoLuvat(hoitajaId[0], luvat)
+
+    def haeSopivat(self, luvat):
+        """Palauttaa listan hoitajista jotka täyttävät annetut luvat"""
+        #TODO: tee tämä näppärällä sql-haulla
+        hoitsut = self.kaikki()
+        return filter(lambda h: h.onkoLuvat(luvat), hoitsut)
 
     def haeLuvat(self, hoitajaId):
         c = self.conn.cursor()
@@ -92,7 +99,7 @@ class Asiakkaat(object):
 
     def hae(self, asiakasid=None, nimi=None):
         """Hakee tietokannasta asiakkaan joko nimen tai id:n perusteella"""
-        if not asiakasaid and not nimi:
+        if not asiakasid and not nimi:
             raise TypeError("hae tarvitsee argumentin asiakasid tai nimi")
 
         c = self.conn.cursor()
@@ -101,8 +108,8 @@ class Asiakkaat(object):
         else:
             c.execute("SELECT rowid, nimi from asiakkaat where nimi=?", (nimi,))
         asiakasid, nimi = c.fetchone()
-        luvat = self.haeLuvat(asiakas)
-        return Asiakas(asiakasid, nimi, luvat)
+        luvat = self.haeLuvat(asiakasid)
+        return Asiakas(asiakasid, nimi, luvat, None)
 
     def kaikki(self):
         c = self.conn.cursor()
@@ -137,10 +144,4 @@ class Asiakkaat(object):
                          values (?,?)""", (asiakasId, l))
         self.conn.commit()
         c.close()
-
-
-        
-        
-                      
-
         
