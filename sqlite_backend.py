@@ -123,8 +123,7 @@ class Asiakkaat(object):
         c = self.conn.cursor()
         c.execute("""INSERT INTO asiakkaat (nimi)
                      VALUES (?)""", (nimi,))
-        c.execute("SELECT rowid from asiakkaat where nimi=?", (nimi,))
-        asiakasId = c.fetchone()
+        asiakasId = c.lastrowid
         c.close()
         self.conn.commit()
         self.luoLuvat(asiakasId[0], luvat)
@@ -142,6 +141,23 @@ class Asiakkaat(object):
         for l in luvat:
             c.execute("""INSERT into asiakasluvat (asiakasid, lupa)
                          values (?,?)""", (asiakasId, l))
-        self.conn.commit()
         c.close()
-        
+        self.conn.commit()
+
+    def lisaaKaynti(self, asiakasid, kesto, luvat):
+        c = self.conn.cursor()
+        c.execute("""INSERT into kaynnit (asiakas, kesto)
+                     values (?,?)""", (asiakasid, kesto))
+        kayntiId = c.lastrowid
+        c.close()
+        self.conn.commit()
+        for l in luvat:
+            lisaaKayntiLupa(kayntiId, l)
+
+    def lisaaKayntiLupa(kayntiId, lupa):
+        c = self.conn.cursor()
+        c.execute("""INSERT into kayntiluvat (kayntiid, lupa)
+                     values (?,?)""", (kayntiId, lupa))
+        c.close()
+
+
