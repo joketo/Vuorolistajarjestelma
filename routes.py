@@ -1,4 +1,4 @@
-from bottle import route, run, template, response, request, redirect
+from bottle import route, run, template, response, request, redirect, static_file
 from main import auth, conn, hoitajat, asiakkaat
 from sqlite3 import IntegrityError
 
@@ -11,6 +11,10 @@ def etusivu():
     if not auth.isLogged():
         redirect("/login")
     return template("front")
+
+@route("/static/<filename>")
+def serve_static():
+    return static_file(filename, "static")
 
 @route("/login")
 def login_form():
