@@ -4,33 +4,21 @@ from user import User
 from hoitaja import Hoitaja
 from asiakas import Asiakas
 
-#TODO: tietokantakursorijuttujen siistiminen dekoraattorilla
-
 class Users(object):
     def __init__(self, dbconnection):
         self.conn = dbconnection
 
     def byName(self, name):
-        c = self.conn.cursor()
-        c.execute("SELECT id, salt, hash from users where username=?", (name,))
-        userid, salt, pwhash = c.fetchone()
-        c.close()
+        userid, salt, pwhash = dbSelect(self.conn, "SELECT id, salt, hash from users where username=?", (name,))[0]
         return User(userid, name, salt, pwhash)
 
     def byId(self, userid):
-        c = self.conn.cursor()
-        c.execute("SELECT username, salt, hash from users where id=?", (userid,))
-        name, salt, pwhash = c.fetchone()
-        c.close()
+        name, salt, pwhash = dbSelect(self.conn, "SELECT username, salt, hash from users where id=?", (userid,))[0]
         return User(userid, name, salt, pwhash)
-        
 
     def addUser(self, name, salt, pwhash):
-        c = self.conn.cursor()
-        c.execute("""INSERT INTO users (username, salt, hash)
+        dbInsert(self.conn, """INSERT INTO users (username, salt, hash)
                   VALUES (?, ?, ?)""", (name, salt, pwhash))
-        self.conn.commit()
-        c.close()
 
 class Hoitajat(object):
     """Luokka Hoitaja-olioiden hakuun ja lisäykseen tietokannasta"""
@@ -43,32 +31,22 @@ class Hoitajat(object):
         if not hoitajaid and not nimi:
             raise TypeError("hae tarvitsee argumentin hoitajaid tai nimi")
 
-        c = self.conn.cursor()
         if hoitajaid:
-            c.execute("SELECT rowid, nimi from hoitajat where rowid=?",(hoitajaid,))
+            hoitajaid, nimi = dbSelect(self.conn, "SELECT rowid, nimi from hoitajat where rowid=?",(hoitajaid,))[0]
         else:
-            c.execute("SELECT rowid, nimi from hoitajat where nimi=?", (nimi,))
-        hoitajaid, nimi = c.fetchone()
+            hoitajaid, nimi = dbSelect(self.conn, "SELECT rowid, nimi from hoitajat where nimi=?", (nimi,))[0]
         luvat = self.haeLuvat(hoitajaid)
         return Hoitaja(hoitajaid, nimi, luvat)
 
     def kaikki(self):
-        c = self.conn.cursor()
-        c.execute("""SELECT rowid from hoitajat""")
-        hoitajaidt = c.fetchall()
-        c.close()
+        hoitajaidt = dbSelect(self.conn, """SELECT rowid from hoitajat""")
         #TODO: onko tämä hidasta?
         return [self.hae(hid[0]) for hid in hoitajaidt]
 
     def uusi(self, nimi, luvat):
-        c = self.conn.cursor()
-        c.execute("""INSERT INTO hoitajat (nimi)
+        hoitajaId = dbInsert(self.conn, """INSERT INTO hoitajat (nimi)
                      VALUES (?)""", (nimi,))
-        c.execute("SELECT rowid from hoitajat where nimi=?", (nimi,))
-        hoitajaId = c.fetchone()
-        c.close()
-        self.conn.commit()
-        self.luoLuvat(hoitajaId[0], luvat)
+        self.luoLuvat(hoitajaId, luvat)
 
     def haeSopivat(self, luvat):
         """Palauttaa listan hoitajista jotka täyttävät annetut luvat"""
@@ -77,20 +55,14 @@ class Hoitajat(object):
         return filter(lambda h: h.onkoLuvat(luvat), hoitsut)
 
     def haeLuvat(self, hoitajaId):
-        c = self.conn.cursor()
-        c.execute("""SELECT lupa from hoitajaluvat
+        luvat = dbSelect(self.conn, """SELECT lupa from hoitajaluvat
                      where hoitajaid = ?""", (hoitajaId,))
-        luvat = c.fetchall()
-        c.close()
         return map(lambda a: a[0], luvat)
 
     def luoLuvat(self, hoitajaId, luvat):
-        c = self.conn.cursor()
         for l in luvat:
-            c.execute("""INSERT into hoitajaluvat (hoitajaid, lupa)
+            dbInsert(self.conn, """INSERT into hoitajaluvat (hoitajaid, lupa)
                          values (?,?)""", (hoitajaId, l))
-        self.conn.commit()
-        c.close()
 
 class Asiakkaat(object):
     """Luokka asiakkaiden räpläykseen tietokantaan/kannasta"""
@@ -102,62 +74,66 @@ class Asiakkaat(object):
         if not asiakasid and not nimi:
             raise TypeError("hae tarvitsee argumentin asiakasid tai nimi")
 
-        c = self.conn.cursor()
         if asiakasid:
-            c.execute("SELECT rowid, nimi from asiakkaat where rowid=?",(asiakasid,))
+            asiakasid, nimi = dbSelect(self.conn, "SELECT rowid, nimi from asiakkaat where rowid=?",(asiakasid,))[0]
         else:
-            c.execute("SELECT rowid, nimi from asiakkaat where nimi=?", (nimi,))
-        asiakasid, nimi = c.fetchone()
+            asiakasid, nimi = dbSelect(self.conn, "SELECT rowid, nimi from asiakkaat where nimi=?", (nimi,))[0]
         luvat = self.haeLuvat(asiakasid)
         return Asiakas(asiakasid, nimi, luvat, None)
 
     def kaikki(self):
-        c = self.conn.cursor()
-        c.execute("""SELECT rowid from asiakkaat""")
-        asiakasidt = c.fetchall()
-        c.close()
+        asiakasidt = dbSelect(self.conn, "SELECT rowid from asiakkaat")
         #TODO: onko tämä hidasta?
-        return [self.hae(hid[0]) for hid in asiakasidt]
+        return [self.hae(aid[0]) for aid in asiakasidt]
 
     def uusi(self, nimi, luvat):
-        c = self.conn.cursor()
-        c.execute("""INSERT INTO asiakkaat (nimi)
-                     VALUES (?)""", (nimi,))
-        asiakasId = c.lastrowid
-        c.close()
-        self.conn.commit()
-        self.luoLuvat(asiakasId[0], luvat)
+        asiakasId = dbInsert(self.conn, """INSERT INTO asiakkaat (nimi)
+                                     VALUES (?)""", (nimi,))
+        self.luoLuvat(asiakasId, luvat)
 
     def haeLuvat(self, asiakasId):
         c = self.conn.cursor()
-        c.execute("""SELECT lupa from asiakasluvat
-                     where asiakasid = ?""", (asiakasId,))
-        luvat = c.fetchall()
-        c.close()
+        luvat = dbSelect(self.conn, """SELECT lupa from asiakasluvat
+                                 where asiakasid = ?""", (asiakasId,))
         return map(lambda a: a[0], luvat)
 
     def luoLuvat(self, asiakasId, luvat):
-        c = self.conn.cursor()
         for l in luvat:
-            c.execute("""INSERT into asiakasluvat (asiakasid, lupa)
-                         values (?,?)""", (asiakasId, l))
-        c.close()
-        self.conn.commit()
+            dbInsert(self.conn, """INSERT into asiakasluvat (asiakasid, lupa)
+                             values (?,?)""", (asiakasId, l))
+
 
     def lisaaKaynti(self, asiakasid, kesto, luvat):
-        c = self.conn.cursor()
-        c.execute("""INSERT into kaynnit (asiakas, kesto)
-                     values (?,?)""", (asiakasid, kesto))
-        kayntiId = c.lastrowid
-        c.close()
-        self.conn.commit()
+        kayntiId = dbInsert(self.conn, """INSERT into kaynnit (asiakas, kesto)
+                                    values (?,?)""", (asiakasid, kesto))
         for l in luvat:
             lisaaKayntiLupa(kayntiId, l)
 
     def lisaaKayntiLupa(kayntiId, lupa):
-        c = self.conn.cursor()
-        c.execute("""INSERT into kayntiluvat (kayntiid, lupa)
-                     values (?,?)""", (kayntiId, lupa))
-        c.close()
+        dbInsert(self.conn, """INSERT into kayntiluvat (kayntiid, lupa)
+                          values (?,?)""", (kayntiId, lupa))
 
+def dbInsert(conn, insertstr, params=None):
+    """Suorita annettu insert-tyyppinen tietokantatoiminto ja palauta lisätyn rivin rowid"""
+    c = conn.cursor()
+    if params:
+        c.execute(insertstr, params)
+    else:
+        c.execute(insertstr)
+    rowid = c.lastrowid
+    c.close
+    conn.commit()
+    return rowid
 
+def dbSelect(conn, selectstr, params=None):
+    """Suorita annettu tietokantahaku ja palauta tietokannalta tulleet arvot"""
+    c = conn.cursor()
+    if params:
+        c.execute(selectstr, params)
+    else:
+        c.execute(selectstr)
+    tulos = c.fetchall()
+    c.close()
+    return tulos
+
+        
