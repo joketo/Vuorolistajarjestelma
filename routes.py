@@ -12,9 +12,9 @@ def etusivu():
         redirect("/login")
     return template("front")
 
-@route("/static/<filename>")
-def serve_static():
-    return static_file(filename, "static")
+@route('/static/<filepath:path>')
+def server_static(filepath):
+    return static_file(filepath, root='static')
 
 @route("/login")
 def login_form():
