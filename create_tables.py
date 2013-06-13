@@ -24,8 +24,11 @@ def create_asiakkaat(dbname):
 
 def create_kaynnit(dbname):
     usedb(dbname, """CREATE TABLE kaynnit
-                     (asiakas text not null, vaatimukset blob, kesto text, hoitaja text)""")
+                     (asiakas text not null, kesto integer, hoitaja text)""")
 
+def create_kayntiluvat(dbname):
+    usedb(dbname, """Create TABLE kayntiluvat
+                     (kayntiid integer, lupa text)""")
 
 def create_hoitajaluvat(dbname):
     usedb(dbname, """CREATE TABLE hoitajaluvat
