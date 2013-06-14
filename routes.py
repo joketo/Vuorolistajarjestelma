@@ -99,6 +99,10 @@ def asiakkaat_post():
     luvat = [l.strip() for l in luvat]
     asiakkaat.uusi(nimi, luvat)
     redirect("/asiakkaat")
+    
+@route("/lisaaVuoro")
+def lisaaVuoro():
+    return template("lisaaVuoro", asiakkaat = ["Marjo", "Mikko", "Kuisma"])
 
 @route("/hoitovuorot")
 def hoitovuorot():
