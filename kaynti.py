@@ -1,7 +1,9 @@
 class Kaynti(object):
     """Simple user info container"""
-    def __init__(self, asiakas, vaatimukset, kesto):
-        self.asiakas = asiakas
+    def __init__(self, kayntiid, vaatimukset, aika, kesto):
+        self.kayntiid = kayntiid
         self.vaatimukset = vaatimukset
         self.kesto = kesto
+        self.aika = aika
+
 
