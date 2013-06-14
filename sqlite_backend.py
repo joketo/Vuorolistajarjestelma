@@ -82,18 +82,17 @@ class Asiakkaat(object):
             asiakasid, nimi = dbSelect(self.conn, 
                                        "SELECT rowid, nimi from asiakkaat where nimi=?",
                                        (nimi,))[0]
-        luvat = self.haeLuvat(asiakasid)
-        return Asiakas(asiakasid, nimi, luvat, None)
+        kaynnit = self.haeKaynnit(asiakasid)
+        return Asiakas(asiakasid, nimi, kaynnit)
 
     def kaikki(self):
         asiakasidt = dbSelect(self.conn, "SELECT rowid from asiakkaat")
         #TODO: onko tämä hidasta?
         return [self.hae(aid[0]) for aid in asiakasidt]
 
-    def uusi(self, nimi, luvat):
+    def uusi(self, nimi):
         asiakasId = dbInsert(self.conn, """INSERT INTO asiakkaat (nimi)
                                      VALUES (?)""", (nimi,))
-        self.luoLuvat(asiakasId, luvat)
 
     def lisaaKaynti(self, asiakasid, kesto, aika, paiva, luvat):
         kayntiId = dbInsert(self.conn, """INSERT into kaynnit (asiakas, kesto)

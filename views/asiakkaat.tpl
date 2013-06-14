@@ -5,13 +5,12 @@
 
   <form method="POST" action="/asiakkaat">
     Nimi: <input name="nimi"     type="text" /><br>
-    Luvat: <input name="luvat" type="text" />
     <input type="submit" value="luo uusi" />
   </form>
 <p style = "color:green">Kantaan talletetut asiakkaat:</p>
 <p>
   %for a in asiakkaat:
-  {{a.nimi + ": " + ", ".join(a.luvat)}}<br>
+  {{a.nimi + ": " + ", ".join(a.kaynnit)}}<br>
   %end
 </p>
 %include footer

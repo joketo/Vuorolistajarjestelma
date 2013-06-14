@@ -94,10 +94,7 @@ def asiakkaat_get():
 @route("/asiakkaat", method="POST")
 def asiakkaat_post():
     nimi = request.forms.getunicode("nimi")
-    luvat = request.forms.getunicode("luvat")
-    luvat = luvat.split(",")
-    luvat = [l.strip() for l in luvat]
-    asiakkaat.uusi(nimi, luvat)
+    asiakkaat.uusi(nimi)
     redirect("/asiakkaat")
     
 @route("/lisaaVuoro")
