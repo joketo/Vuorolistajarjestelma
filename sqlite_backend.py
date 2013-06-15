@@ -3,6 +3,7 @@ import json
 from user import User
 from hoitaja import Hoitaja
 from asiakas import Asiakas
+from kaynti import Kaynti
 
 class Users(object):
     def __init__(self, dbconnection):
@@ -95,27 +96,27 @@ class Asiakkaat(object):
                                      VALUES (?)""", (nimi,))
 
     def lisaaKaynti(self, asiakasid, kesto, aika, paiva, luvat):
-        kayntiId = dbInsert(self.conn, """INSERT into kaynnit (asiakas, kesto)
+        kayntiId = dbInsert(self.conn, """INSERT into kaynnit (asiakasid, kesto, aika, paiva)
                                           values (?,?,?,?)""",
                                           (asiakasid, kesto, aika, paiva))
         for l in luvat:
-            lisaaKayntiLupa(kayntiId, l)
+            self.lisaaKayntiLupa(kayntiId, l)
 
     def haeKaynnit(self, asiakasid):
         kayntirivit = dbSelect(self.conn, 
-                               "SELECT rowid, kesto from kaynnit where asiakasid = ?",
+                               "SELECT rowid, paiva, aika, kesto from kaynnit where asiakasid = ?",
                                (asiakasid,))
         kaynnit = []
         for rivi in kayntirivit:
             luvat = self.haeKayntiLuvat(rivi[0])
-            kaynnit.append(rivi[0], luvat, rivi[1])
+            kaynnit.append(Kaynti(rivi[0], luvat, rivi[1], rivi[2], rivi[3]))
         return kaynnit
 
-    def lisaaKayntiLupa(kayntiId, lupa):
+    def lisaaKayntiLupa(self, kayntiId, lupa):
         dbInsert(self.conn, """INSERT into kayntiluvat (kayntiid, lupa)
                           values (?,?)""", (kayntiId, lupa))
 
-    def haeKayntiLuvat(kayntiId):
+    def haeKayntiLuvat(self, kayntiId):
         return dbSelect(self.conn, 
                         "SELECT lupa from kayntiluvat where kayntiid=?", (kayntiId,))
 

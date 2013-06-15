@@ -25,9 +25,9 @@ def create_asiakkaat(dbname):
 def create_kaynnit(dbname):
     usedb(dbname, """CREATE TABLE kaynnit
                      (asiakasid integer,
-                      kesto integer
-                      aika integer
-                      paiva integer)""")
+                      paiva integer,
+                      aika integer,
+                      kesto integer)""")
 
 def create_kayntiluvat(dbname):
     usedb(dbname, """Create TABLE kayntiluvat
