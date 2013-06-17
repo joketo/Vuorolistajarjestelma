@@ -33,4 +33,3 @@
         <br>
         <input type="submit" value="Lisää" />
 </form>
-<a href="/asiakkaat">Takaisin asiakkaiden lisäykseen</a>

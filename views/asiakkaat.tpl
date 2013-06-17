@@ -1,6 +1,4 @@
 <p>Tässä voit lisätä uuden asiakkaan tietokantaan<p>
-<a href="/lisaaVuoro">Tästä pääset määrittämään asiakkaan vuorot</a>
-
   <form method="POST" action="/asiakkaat">
     Nimi: <input name="nimi"     type="text" /><br>
     <input type="submit" value="luo uusi" />
