@@ -3,11 +3,13 @@ from main import auth, conn, hoitajat, asiakkaat
 from sqlite3 import IntegrityError
 import vakioita
 
-
+def loginVaaditaan():
+   if not auth.isLogged():
+        redirect("/login") 
+    
 @route("/")
 def etusivu():
-    if not auth.isLogged():
-        redirect("/login")
+    loginVaaditaan()
     return template("front")
 
 
@@ -74,23 +76,20 @@ def registered():
     return template("registered", users = str(users))
 
 
-@route("/hallinta")
-def hallinta():
-    return template("hallinta")
-
-
 @route("/hoitajat")
 def hoitajat_get():
+    loginVaaditaan()
     hoitsut = hoitajat.kaikki()
     return template("hoitajat", hoitajat =hoitsut)
     
 
 @route("/hoitajat", method="POST")
 def hoitajat_post():
+    loginVaaditaan()
     nimi = request.forms.getunicode("nimi")
-    luvat = request.forms.getunicode("luvat")
-    luvat = luvat.split(",")
-    luvat = [l.strip() for l in luvat]
+    luvat = request.forms.getall("lupa")
+    # kai tähän pitää olla fiksumpi tapa, ei ole getallunicode()-metodia...
+    luvat = [l.encode("latin-1").decode("utf8") for l in luvat]
     hoitajat.uusi(nimi, luvat)
     print(type(nimi), nimi, luvat)
     redirect("/hoitajat")
@@ -99,6 +98,7 @@ def hoitajat_post():
 
 @route("/asiakkaat", method="POST")
 def asiakkaat_post():
+    loginVaaditaan()
     nimi = request.forms.getunicode("nimi")
     asiakkaat.uusi(nimi)
     redirect("/asiakkaanHallinta")
@@ -106,12 +106,14 @@ def asiakkaat_post():
     
 @route("/asiakkaanHallinta")
 def asiakkaanHallinta():
-    return template("asiakkaanHallinta", asiakkaat = asiakkaat.kaikki(), luvat = vakioita.luvat)
+    loginVaaditaan()
+    return template("asiakkaanHallinta", asiakkaat = asiakkaat.kaikki())
     
     
 
 @route("/lisaaVuoro", method="POST")
 def lisaaVuoro_post():
+    loginVaaditaan()
     request.forms.recode_unicode = True
     asiakasid = request.forms.getunicode("asiakas")
     paiva = request.forms.getunicode("paiva")

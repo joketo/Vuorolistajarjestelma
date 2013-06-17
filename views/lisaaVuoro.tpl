@@ -1,5 +1,4 @@
-
-%from vakioita import paivat, ajat, kestot
+%from vakioita import paivat, ajat, kestot, luvat
 <p>Lisää valitsemallesi asiakkaalle hoitokäynti</p>
 <form method="POST" action="/lisaaVuoro">
     <select name="asiakas">
