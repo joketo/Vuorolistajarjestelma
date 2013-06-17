@@ -3,9 +3,9 @@ import vakioita
 
 class Kaynti(object):
     """Simple user info container"""
-    def __init__(self, kayntiid, asiakasid, vaatimukset, paiva, aika, kesto):
+    def __init__(self, kayntiid, asiakasid, luvat, paiva, aika, kesto):
         self.kayntiid = kayntiid
-        self.vaatimukset = vaatimukset
+        self.luvat = luvat
         self.kesto = kesto
         self.aika = aika
         self.paiva = paiva

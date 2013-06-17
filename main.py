@@ -5,6 +5,7 @@ import sqlite3
 from sqlite_backend import Hoitajat, Asiakkaat
 
 from auth import Auth
+import routes
 
 from sqlite_backend import Users
 
