@@ -1,9 +1,8 @@
-import sqlite3
-import json
 from user import User
 from hoitaja import Hoitaja
 from asiakas import Asiakas
 from kaynti import Kaynti
+
 
 class Users(object):
     def __init__(self, dbconnection):
@@ -21,6 +20,7 @@ class Users(object):
         dbInsert(self.conn, """INSERT INTO users (username, salt, hash)
                   VALUES (?, ?, ?)""", (name, salt, pwhash))
 
+
 class Hoitajat(object):
     """Luokka Hoitaja-olioiden hakuun ja lisäykseen tietokannasta"""
     #TODO: luvat pitää nyt hakea lupataulusta
@@ -33,7 +33,7 @@ class Hoitajat(object):
             raise TypeError("hae tarvitsee argumentin hoitajaid tai nimi")
 
         if hoitajaid:
-            hoitajaid, nimi = dbSelect(self.conn, "SELECT rowid, nimi from hoitajat where rowid=?",(hoitajaid,))[0]
+            hoitajaid, nimi = dbSelect(self.conn, "SELECT rowid, nimi from hoitajat where rowid=?", (hoitajaid,))[0]
         else:
             hoitajaid, nimi = dbSelect(self.conn, "SELECT rowid, nimi from hoitajat where nimi=?", (nimi,))[0]
         luvat = self.haeLuvat(hoitajaid)
@@ -65,6 +65,7 @@ class Hoitajat(object):
             dbInsert(self.conn, """INSERT into hoitajaluvat (hoitajaid, lupa)
                          values (?,?)""", (hoitajaId, l))
 
+
 class Asiakkaat(object):
     """Luokka asiakkaiden räpläykseen tietokantaan/kannasta"""
     def __init__(self, tkyhteys):
@@ -92,24 +93,34 @@ class Asiakkaat(object):
         return [self.hae(aid[0]) for aid in asiakasidt]
 
     def uusi(self, nimi):
-        asiakasId = dbInsert(self.conn, """INSERT INTO asiakkaat (nimi)
-                                     VALUES (?)""", (nimi,))
+        dbInsert(self.conn, """INSERT INTO asiakkaat (nimi)
+                               VALUES (?)""", (nimi,))
 
     def lisaaKaynti(self, asiakasid, kesto, aika, paiva, luvat):
         kayntiId = dbInsert(self.conn, """INSERT into kaynnit (asiakasid, kesto, aika, paiva)
                                           values (?,?,?,?)""",
-                                          (asiakasid, kesto, aika, paiva))
+                                       (asiakasid, kesto, aika, paiva))
         for l in luvat:
             self.lisaaKayntiLupa(kayntiId, l)
 
     def haeKaynnit(self, asiakasid):
         kayntirivit = dbSelect(self.conn, 
-                               "SELECT rowid, paiva, aika, kesto from kaynnit where asiakasid = ?",
+                               "SELECT rowid, asiakasid, paiva, aika, kesto from kaynnit where asiakasid = ?",
                                (asiakasid,))
         kaynnit = []
         for rivi in kayntirivit:
             luvat = self.haeKayntiLuvat(rivi[0])
-            kaynnit.append(Kaynti(rivi[0], luvat, rivi[1], rivi[2], rivi[3]))
+            kaynnit.append(Kaynti(rivi[0], rivi[1], luvat, rivi[2], rivi[3], rivi[4]))
+        return kaynnit
+
+    def kaikkiKaynnit(self):
+        kayntirivit = dbSelect(self.conn,
+                               "SELECT rowid, asiakasid, paiva, aika, kesto from kaynnit")
+
+        kaynnit = []
+        for rivi in kayntirivit:
+            luvat = self.haeKayntiLuvat(rivi[0])
+            kaynnit.append(Kaynti(rivi[0], rivi[1], luvat, rivi[2], rivi[3], rivi[4]))
         return kaynnit
 
     def lisaaKayntiLupa(self, kayntiId, lupa):
@@ -119,6 +130,7 @@ class Asiakkaat(object):
     def haeKayntiLuvat(self, kayntiId):
         return dbSelect(self.conn, 
                         "SELECT lupa from kayntiluvat where kayntiid=?", (kayntiId,))
+
 
 def dbInsert(conn, insertstr, params=None):
     """Suorita annettu insert-tyyppinen tietokantatoiminto ja palauta lisätyn rivin rowid"""
@@ -132,6 +144,7 @@ def dbInsert(conn, insertstr, params=None):
     conn.commit()
     return rowid
 
+
 def dbSelect(conn, selectstr, params=None):
     """Suorita annettu tietokantahaku ja palauta tietokannalta tulleet arvot"""
     c = conn.cursor()
@@ -143,4 +156,4 @@ def dbSelect(conn, selectstr, params=None):
     c.close()
     return tulos
 
-        
+
