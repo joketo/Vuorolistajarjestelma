@@ -1,6 +1,7 @@
 from bottle import route, run, template, response, request, redirect, static_file
 from main import auth, conn, hoitajat, asiakkaat
 from sqlite3 import IntegrityError
+import vakioita
 
 
 @route("/")
@@ -109,7 +110,7 @@ def asiakkaat_post():
 @route("/lisaaVuoro")
 def lisaaVuoro_get():
     aslista = asiakkaat.kaikki()
-    return template("lisaaVuoro", asiakkaat = aslista, luvat = ["lääke", "haavat", "silmätipat"])
+    return template("lisaaVuoro", asiakkaat = aslista, luvat = vakioita.luvat)
 
 
 @route("/lisaaVuoro", method="POST")
