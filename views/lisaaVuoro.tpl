@@ -15,8 +15,8 @@
         <option value="{{pvm[0]}}">{{pvm[1]}}</option>
         %end
     </select>
-    <select name="ajankohta">
-        <option value="ei valittu">--ajankohta--</option>        
+    <select name="aika">
+        <option value="ei valittu">--aika--</option>        
         %for aika in enumerate(ajat):
         <option value="{{aika[0]}}">{{aika[1]}}</option>
         %end
@@ -34,4 +34,5 @@
         <br>
         <input type="submit" value="Lisää" />
 </form>
+<a href="/asiakkaat">Takaisin asiakkaiden lisäykseen</a>
 %include footer
