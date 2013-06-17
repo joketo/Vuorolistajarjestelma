@@ -1,12 +1,18 @@
 %include header
 %include navigaatio
+%from vakioita import luvat
 <p>Tässä voit lisätä uuden hoitajan tietokantaan<p>
-<p>Erottele luvat pilkulla. Tyhjä tarkoittaa luvatonta</p>
+
   <form method="POST" action="/hoitajat">
-    Nimi: <input name="nimi"     type="text" /><br>
-    Luvat: <input name="luvat" type="text" />
-    <input type="submit" value="luo uusi" />
+    Nimi: <input name="nimi"     type="text" />
+        %for lupa in luvat:
+        <input type="checkbox" name="lupa" value="{{lupa}}">{{lupa}}
+        %end
+        
+        <input type="submit" value="Lisää" />
+    
   </form>
+       
 
 <p style = "color:green">Kantaan talletetut hoitajat:</p>
 <p>
