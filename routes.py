@@ -96,22 +96,19 @@ def hoitajat_post():
     redirect("/hoitajat")
 
 
-@route("/asiakkaat")
-def asiakkaat_get():
-    return template("asiakkaat", asiakkaat=asiakkaat.kaikki())
-
 
 @route("/asiakkaat", method="POST")
 def asiakkaat_post():
     nimi = request.forms.getunicode("nimi")
     asiakkaat.uusi(nimi)
-    redirect("/asiakkaat")
+    redirect("/asiakkaanHallinta")
     
-@route("/lisaaVuoro")
-def lisaaVuoro_get():
-    aslista = asiakkaat.kaikki()
-    return template("lisaaVuoro", asiakkaat = aslista, luvat = vakioita.luvat)
-
+    
+@route("/asiakkaanHallinta")
+def asiakkaanHallinta():
+    return template("asiakkaanHallinta", asiakkaat = asiakkaat.kaikki(), luvat = vakioita.luvat)
+    
+    
 
 @route("/lisaaVuoro", method="POST")
 def lisaaVuoro_post():
@@ -124,7 +121,7 @@ def lisaaVuoro_post():
     # kai tähän pitää olla fiksumpi tapa, ei ole getallunicode()-metodia...
     luvat = [l.encode("latin-1").decode("utf8") for l in luvat]
     asiakkaat.lisaaKaynti(asiakasid, kesto, aika, paiva, luvat)
-    redirect("/lisaaVuoro")
+    redirect("/asiakkaanHallinta")
 
 
 @route("/hoitovuorot")

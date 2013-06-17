@@ -8,7 +8,7 @@
 
   <div id="menu" style="background-color:#E0FFFF;width:200px;float:left;">
     <a href ="/hoitajat"><img src= "/static/hallitsehoitajia.png" width="160" height="102"/></a>
-    <a href ="/asiakkaat"><img src= "/static/hallitseasiakkaita.png" width="160" height="102" /></a>
+    <a href ="/asiakkaanHallinta"><img src= "/static/hallitseasiakkaita.png" width="160" height="102" /></a>
     <a href="/logout">Kirjaudu ulos</a>
   </div>
 

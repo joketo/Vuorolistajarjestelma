@@ -1,5 +1,3 @@
-%include header
-%include navigaatio
 <p>Tässä voit lisätä uuden asiakkaan tietokantaan<p>
 <a href="/lisaaVuoro">Tästä pääset määrittämään asiakkaan vuorot</a>
 
@@ -9,9 +7,8 @@
   </form>
 <p style = "color:green">Kantaan talletetut asiakkaat:</p>
 <p>
-  %for a in asiakkaat:
+  %for a in asiakaslista:
   {{a.nimi + ": " + "; ".join([str(k) for k in a.kaynnit])}}<br>
   %end
 </p>
-%include footer
 

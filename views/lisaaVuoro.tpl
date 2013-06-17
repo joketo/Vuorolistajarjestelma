@@ -1,5 +1,4 @@
-%include header
-%include navigaatio
+
 %from vakioita import paivat, ajat, kestot
 <p>Lisää valitsemallesi asiakkaalle hoitokäynti</p>
 <form method="POST" action="/lisaaVuoro">
@@ -35,4 +34,3 @@
         <input type="submit" value="Lisää" />
 </form>
 <a href="/asiakkaat">Takaisin asiakkaiden lisäykseen</a>
-%include footer
