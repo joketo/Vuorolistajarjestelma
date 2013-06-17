@@ -76,6 +76,7 @@ class Asiakkaat(object):
         if not asiakasid and not nimi:
             raise TypeError("hae tarvitsee argumentin asiakasid tai nimi")
 
+        # TODO: heittele virhe jos ei löydy moisen nimistä/id:istä
         if asiakasid:
             asiakasid, nimi = dbSelect(self.conn, 
                                        "SELECT rowid, nimi from asiakkaat where rowid=?",
@@ -128,8 +129,9 @@ class Asiakkaat(object):
                           values (?,?)""", (kayntiId, lupa))
 
     def haeKayntiLuvat(self, kayntiId):
-        return dbSelect(self.conn, 
-                        "SELECT lupa from kayntiluvat where kayntiid=?", (kayntiId,))
+        luvat = dbSelect(self.conn,
+                         "SELECT lupa from kayntiluvat where kayntiid=?", (kayntiId,))
+        return [l[0] for l in luvat]
 
 
 def dbInsert(conn, insertstr, params=None):

@@ -11,7 +11,7 @@
 %for h in hoitajat:
   <td>{{h}}</td>
   <td>  
-  {{", ".join(hoitajat[h])}}  
+  {{", ".join([a.nimi for a in hoitajat[h]])}}
   </td>  
 </tr>
 %end

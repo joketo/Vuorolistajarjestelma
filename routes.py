@@ -1,7 +1,6 @@
 from bottle import route, run, template, response, request, redirect, static_file
 from main import auth, conn, hoitajat, asiakkaat
 from sqlite3 import IntegrityError
-import vakioita
 
 
 def loginVaaditaan():
@@ -112,7 +111,6 @@ def asiakkaanHallinta():
     loginVaaditaan()
     return template("asiakkaanHallinta", asiakkaat=asiakkaat.kaikki())
     
-    
 
 @route("/lisaaVuoro", method="POST")
 def lisaaVuoro_post():
@@ -137,10 +135,11 @@ def hoitovuorot():
     hoitokerrat = {h: 0 for h in map(lambda h: h.nimi, hoitajat.kaikki())}
     hoitovuorot = {h: [] for h in map(lambda h: h.nimi, hoitajat.kaikki())}
     for k in asiakkaat.kaikkiKaynnit():
+        print(k.luvat)
         sopivat = hoitajat.haeSopivat(k.luvat)
         hoitaja = min(sopivat, key=lambda k: hoitokerrat[k.nimi])
         hoitokerrat[hoitaja.nimi] += 1
-        hoitovuorot[hoitaja.nimi].append(k.nimi)
+        hoitovuorot[hoitaja.nimi].append(asiakkaat.hae(asiakasid=k.asiakasid))
 
     return template("hoitovuorot", hoitajat=hoitovuorot)
 
