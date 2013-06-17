@@ -10,7 +10,7 @@
 <p style = "color:green">Kantaan talletetut asiakkaat:</p>
 <p>
   %for a in asiakkaat:
-  {{a.nimi + ": " + ", ".join([str(k) for k in a.kaynnit])}}<br>
+  {{a.nimi + ": " + "; ".join([str(k) for k in a.kaynnit])}}<br>
   %end
 </p>
 %include footer
