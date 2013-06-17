@@ -1,13 +1,10 @@
-from bottle import route, run, template, response, request
 from beaker.middleware import SessionMiddleware
 import bottle
-import random
 import sqlite3
 
 from sqlite_backend import Hoitajat, Asiakkaat
 
 from auth import Auth
-import routes
 
 from sqlite_backend import Users
 
@@ -28,5 +25,5 @@ auth = Auth(Users(conn))
 
 
 if __name__ == "__main__":
-    run(app=app, host='localhost', port=8080, debug=True, reloader=True)
+    bottle.run(app=app, host='localhost', port=8080, debug=True, reloader=True)
 

@@ -3,10 +3,12 @@ from main import auth, conn, hoitajat, asiakkaat
 from sqlite3 import IntegrityError
 import vakioita
 
+
 def loginVaaditaan():
-   if not auth.isLogged():
-        redirect("/login") 
+    if not auth.isLogged():
+        redirect("/login")
     
+
 @route("/")
 def etusivu():
     loginVaaditaan()
@@ -20,7 +22,7 @@ def server_static(filepath):
 
 @route("/login")
 def login_form():
-    return template("loginForm", viesti = None)
+    return template("loginForm", viesti=None)
 
 
 @route("/login", method="POST")
@@ -30,8 +32,9 @@ def login_submit():
     
     try:
         auth.login(name, password)
+    # Innokas except jottei loginin epäonnistumisviesti anna vihjeitä hyökkääjälle
     except:
-        return template("loginForm", viesti = "Sisäänkirjautuminen epäonnistui")
+        return template("loginForm", viesti="Sisäänkirjautuminen epäonnistui")
     redirect("/")
 
 
@@ -43,7 +46,7 @@ def logout():
 
 @route("/register")
 def register_get():
-    return template("register", viesti = None)
+    return template("register", viesti=None)
 
 
 @route("/register", method="POST")
@@ -53,11 +56,11 @@ def register_post():
     password2 = request.forms.getunicode("password2")
     
     if password1 != password2:
-        return template("register", viesti = "Salasanat eivät täsmää")
+        return template("register", viesti="Salasanat eivät täsmää")
     try:
         auth.register(name, password1)
     except IntegrityError:
-        return template("register", viesti = "Valitsemasi käyttäjätunnus on jo käytössä")
+        return template("register", viesti="Valitsemasi käyttäjätunnus on jo käytössä")
     return template("rekOK")
 
 
@@ -73,14 +76,14 @@ def registered():
     c = conn.cursor()
     c.execute("SELECT id, username from users")
     users = c.fetchall()
-    return template("registered", users = str(users))
+    return template("registered", users=str(users))
 
 
 @route("/hoitajat")
 def hoitajat_get():
     loginVaaditaan()
     hoitsut = hoitajat.kaikki()
-    return template("hoitajat", hoitajat =hoitsut)
+    return template("hoitajat", hoitajat=hoitsut)
     
 
 @route("/hoitajat", method="POST")
@@ -107,7 +110,7 @@ def asiakkaat_post():
 @route("/asiakkaanHallinta")
 def asiakkaanHallinta():
     loginVaaditaan()
-    return template("asiakkaanHallinta", asiakkaat = asiakkaat.kaikki())
+    return template("asiakkaanHallinta", asiakkaat=asiakkaat.kaikki())
     
     
 
@@ -131,14 +134,14 @@ def hoitovuorot():
     # TODO: luo hoitovuorot jossain muualla
     # jakaa hoitovuoron mahdollisista hoitajista aina sille, jolla on
     # vähiten käyntejä
-    hoitokerrat = {h:0 for h in map(lambda h: h.nimi, hoitajat.kaikki())}
-    hoitovuorot = {h:[] for h in  map(lambda h: h.nimi, hoitajat.kaikki())}
-    for a in asiakkaat.kaikki():
-        sopivat = hoitajat.haeSopivat(a.luvat)
-        hoitaja = min(sopivat, key = lambda h: hoitokerrat[h.nimi])
-        hoitokerrat[hoitaja.nimi]+=1
-        hoitovuorot[hoitaja.nimi].append(a.nimi)
+    hoitokerrat = {h: 0 for h in map(lambda h: h.nimi, hoitajat.kaikki())}
+    hoitovuorot = {h: [] for h in map(lambda h: h.nimi, hoitajat.kaikki())}
+    for k in asiakkaat.kaikkiKaynnit():
+        sopivat = hoitajat.haeSopivat(k.luvat)
+        hoitaja = min(sopivat, key=lambda k: hoitokerrat[k.nimi])
+        hoitokerrat[hoitaja.nimi] += 1
+        hoitovuorot[hoitaja.nimi].append(k.nimi)
 
-    return template("hoitovuorot", hoitajat = hoitovuorot)
+    return template("hoitovuorot", hoitajat=hoitovuorot)
 
 
