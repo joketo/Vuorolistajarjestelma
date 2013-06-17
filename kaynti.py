@@ -5,5 +5,6 @@ class Kaynti(object):
         self.vaatimukset = vaatimukset
         self.kesto = kesto
         self.aika = aika
+        self.paiva = paiva
 
 

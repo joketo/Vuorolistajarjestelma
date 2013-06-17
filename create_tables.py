@@ -8,19 +8,23 @@ def usedb(dbname, dbstring, createparams=tuple()):
     conn.commit()
     conn.close()
 
+
 #TODO: sqlite lisää automaattisesti nopeasti hakevat rowid:t! turhat tauhkat pois...
 def create_users(dbname):
-    usedb(dbname,"""CREATE TABLE users
+    usedb(dbname, """CREATE TABLE users
                     (id integer primary key autoincrement, username text unique not null, 
                      salt blob, hash blob)""")
+
 
 def create_hoitsut(dbname):
     usedb(dbname, """CREATE TABLE hoitajat
                      (nimi text unique not null)""")
 
+
 def create_asiakkaat(dbname):
     usedb(dbname, """CREATE TABLE asiakkaat
                      (nimi text unique not null)""")
+
 
 def create_kaynnit(dbname):
     usedb(dbname, """CREATE TABLE kaynnit
@@ -29,9 +33,11 @@ def create_kaynnit(dbname):
                       aika integer,
                       kesto integer)""")
 
+
 def create_kayntiluvat(dbname):
     usedb(dbname, """Create TABLE kayntiluvat
                      (kayntiid integer, lupa text)""")
+
 
 def create_hoitajaluvat(dbname):
     usedb(dbname, """CREATE TABLE hoitajaluvat

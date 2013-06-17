@@ -1,5 +1,6 @@
 class Hoitaja(object):
     """Simple user info container"""
+
     def __init__(self, hoitsuid, nimi, luvat):
         self.hoitsuid = hoitsuid
         self.nimi = nimi
@@ -10,8 +11,7 @@ class Hoitaja(object):
             if not lupa in self.luvat:
                 return False
         return True
-    
-    def sopiikoKaynti(self, kaynti):
-        return onkoLuvat(kaynti.vaatimukset)
 
-        
+    def sopiikoKaynti(self, kaynti):
+        return self.onkoLuvat(kaynti.vaatimukset)
+

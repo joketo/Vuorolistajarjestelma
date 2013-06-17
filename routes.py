@@ -2,9 +2,6 @@ from bottle import route, run, template, response, request, redirect, static_fil
 from main import auth, conn, hoitajat, asiakkaat
 from sqlite3 import IntegrityError
 
-#testisyötettä formeille
-def rand():
-    return random.choice([True,False])
 
 @route("/")
 def etusivu():
@@ -12,13 +9,16 @@ def etusivu():
         redirect("/login")
     return template("front")
 
+
 @route('/static/<filepath:path>')
 def server_static(filepath):
     return static_file(filepath, root='static')
 
+
 @route("/login")
 def login_form():
     return template("loginForm", viesti = None)
+
 
 @route("/login", method="POST")
 def login_submit():
@@ -31,14 +31,17 @@ def login_submit():
         return template("loginForm", viesti = "Sisäänkirjautuminen epäonnistui")
     redirect("/")
 
+
 @route("/logout")
 def logout():
     auth.logout()
     return template("logout")
 
+
 @route("/register")
 def register_get():
     return template("register", viesti = None)
+
 
 @route("/register", method="POST")
 def register_post():
@@ -54,6 +57,7 @@ def register_post():
         return template("register", viesti = "Valitsemasi käyttäjätunnus on jo käytössä")
     return template("rekOK")
 
+
 @route("/whoami")
 def whoami():
     islogged = auth.isLogged()
@@ -68,15 +72,18 @@ def registered():
     users = c.fetchall()
     return template("registered", users = str(users))
 
+
 @route("/hallinta")
 def hallinta():
     return template("hallinta")
+
 
 @route("/hoitajat")
 def hoitajat_get():
     hoitsut = hoitajat.kaikki()
     return template("hoitajat", hoitajat =hoitsut)
     
+
 @route("/hoitajat", method="POST")
 def hoitajat_post():
     nimi = request.forms.getunicode("nimi")
@@ -87,9 +94,11 @@ def hoitajat_post():
     print(type(nimi), nimi, luvat)
     redirect("/hoitajat")
 
+
 @route("/asiakkaat")
 def asiakkaat_get():
     return template("asiakkaat", asiakkaat=asiakkaat.kaikki())
+
 
 @route("/asiakkaat", method="POST")
 def asiakkaat_post():
@@ -101,6 +110,7 @@ def asiakkaat_post():
 def lisaaVuoro_get():
     aslista = asiakkaat.kaikki()
     return template("lisaaVuoro", asiakkaat = aslista, luvat = ["lääke", "haavat", "silmätipat"])
+
 
 @route("/lisaaVuoro", method="POST")
 def lisaaVuoro_post():
@@ -114,6 +124,7 @@ def lisaaVuoro_post():
     luvat = [l.encode("latin-1").decode("utf8") for l in luvat]
     asiakkaat.lisaaKaynti(asiakasid, kesto, aika, paiva, luvat)
     redirect("/lisaaVuoro")
+
 
 @route("/hoitovuorot")
 def hoitovuorot():
@@ -129,3 +140,5 @@ def hoitovuorot():
         hoitovuorot[hoitaja.nimi].append(a.nimi)
 
     return template("hoitovuorot", hoitajat = hoitovuorot)
+
+

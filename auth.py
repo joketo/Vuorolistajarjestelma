@@ -1,6 +1,7 @@
 import bcrypt
 from bottle import request
 
+
 class Auth(object):
     """Module for authenticating users and managing sessions."""
     def __init__(self, userbackend):
@@ -40,4 +41,4 @@ class Auth(object):
         salt = bcrypt.gensalt()
         pwhash = bcrypt.hashpw(password.encode(), salt)
         self.users.addUser(name, salt, pwhash)
-        
+
