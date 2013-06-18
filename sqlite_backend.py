@@ -111,7 +111,7 @@ class Asiakkaat(object):
         kaynnit = []
         for rivi in kayntirivit:
             luvat = self.haeKayntiLuvat(rivi[0])
-            kaynnit.append(Kaynti(rivi[0], rivi[1], luvat, rivi[2], rivi[3], rivi[4]))
+            kaynnit.append(Kaynti(rivi[0], self, rivi[1], luvat, rivi[2], rivi[3], rivi[4]))
         return kaynnit
 
     def kaikkiKaynnit(self):
@@ -121,7 +121,7 @@ class Asiakkaat(object):
         kaynnit = []
         for rivi in kayntirivit:
             luvat = self.haeKayntiLuvat(rivi[0])
-            kaynnit.append(Kaynti(rivi[0], rivi[1], luvat, rivi[2], rivi[3], rivi[4]))
+            kaynnit.append(Kaynti(rivi[0], self, rivi[1], luvat, rivi[2], rivi[3], rivi[4]))
         return kaynnit
 
     def lisaaKayntiLupa(self, kayntiId, lupa):
