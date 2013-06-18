@@ -1,14 +1,16 @@
 Images work like this:
 <img src="website URL" />
-
 Links work like this:
 <a href="website URL"></a>
-
+<h2 style="color: green; font-size:12px">
 create an ordered list using the <ol> tag.
 list items should be wrapped (i.e. surrounded) by <li> tags
-
 aina ennen töiden aloittamista:
 source bin/activate
 
-<h2 style="color: green; font-size:12px">
 
+TODO
+-vuorojen poistaminen, hoitajien ja asiakkaiden muokkaus ja poisto
+-järkevät virheviestit ja virheiden tarkistus yleensäkin
+-vuorojen jako ajan mukaan
+-vuoronjaossa näkyy, kuinka paljon kullakin menee aikaa asiakkaissaan yhteensä
