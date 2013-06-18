@@ -1,0 +1,38 @@
+h1 {
+    margin:0;
+    display: inline-block;
+}
+
+div#container {
+    width:960px;
+    margin: 0 auto 0 auto;
+}
+
+div#header {
+    text-align: justify;
+    padding: 5px 10px 5px 5px;
+    background-color: #B5DCE8;
+}
+
+div#header:after{
+    content:'';
+    display:inline-block;
+    width:100%
+}
+
+nav#headernav {
+    display:inline-block;
+    vertical-align: baseline;
+}
+
+nav#sivupalkki {
+    background-color:#E0FFFF;
+    width:200px;
+    padding: 5px 5px 5px 5px;
+    float:left;
+}
+
+div#content {
+    background-color:#E0FFFF;
+    padding-bottom:20px;
+}
