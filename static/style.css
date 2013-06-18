@@ -46,3 +46,7 @@ ul.nav {
     margin:0;
     padding:0;
 } 
+
+p#error {
+color: red;
+}

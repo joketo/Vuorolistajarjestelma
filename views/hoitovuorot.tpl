@@ -19,7 +19,7 @@
   <h3>{{h}}:</h3>
   %for kaynti in hoitajat[h]:
   <ul>
-    <li>{{kaynti}}: {{kaynti.asiakas().nimi}}</li>
+    <li>{{kaynti}}: {{kaynti.asiakas()3.nimi}}</li>
   </ul>
   %end
 </p>

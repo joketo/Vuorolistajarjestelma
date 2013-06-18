@@ -86,17 +86,24 @@ def hoitajat_post():
     luvat = request.forms.getall("lupa")
     # kai tähän pitää olla fiksumpi tapa, ei ole getallunicode()-metodia...
     luvat = [l.encode("latin-1").decode("utf8") for l in luvat]
-    hoitajat.uusi(nimi, luvat)
-    print(type(nimi), nimi, luvat)
+    try:
+        hoitajat.uusi(nimi, luvat)
+    except:
+        return template("hoitajat",hoitajat = hoitajat.kaikki(),
+                        virheviesti="Hoitajan lisäys epäonnistui")
     redirect("/hoitajat")
-
 
 
 @route("/asiakkaat", method="POST")
 def asiakkaat_post():
     loginVaaditaan()
     nimi = request.forms.getunicode("nimi")
-    asiakkaat.uusi(nimi)
+    try:
+        asiakkaat.uusi(nimi)
+    except Exception:
+        return template("asiakkaanHallinta", asiakkaat=asiakkaat.kaikki(), 
+                        virheviesti="Asiakkaan lisäys epäonnistui")
+        
     redirect("/asiakkaanHallinta")
     
     
