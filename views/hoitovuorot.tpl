@@ -1,7 +1,3 @@
-%include header
-%include navigaatio
-<p>tänne tulee näkymä jaetuista vuoroista hoitajittain</p>
-
 <table border="2">
 <tr>
   <td><b>hoitaja</b></td>
@@ -17,4 +13,4 @@
 %end
 </table>
 
-%include footer
+%rebase layout otsikko="Hoitovuorot"

@@ -1,5 +1,3 @@
-%include header
-%include navigaatio
 %from vakioita import luvat
 <p>Tässä voit lisätä uuden hoitajan tietokantaan<p>
 
@@ -20,4 +18,5 @@
   {{h.nimi + ": " + ", ".join(h.luvat)}}<br>
   %end
 </p>
-%include footer
+
+%rebase layout otsikko="Hallitse hoitajia"
