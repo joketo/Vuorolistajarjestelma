@@ -8,11 +8,13 @@
     <link rel="stylesheet" type="text/css" href="/static/style.css">
   </head>
   <body>
-    %include ylapalkki otsikko=otsikko
-    %include navigaatio
-    %include
-    <div id="footer" style="background-color:#FFA500;clear:both;text-align:center;">
-      Copyright © Meme-kissa
+    <div id="container">
+      %include ylapalkki otsikko=otsikko
+      %include navigaatio
+      <div id="content">
+        %include
+      </div>
+      %include footer
     </div>
   </body>
 </html>

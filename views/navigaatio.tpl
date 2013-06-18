@@ -1,8 +1,8 @@
-<div id="content" style="background-color:#C6FF6D;height:30px;width:1000px;float:left;">
-    <a href="/register">Rekisteröidy</a>
-    <a href="/logout">Uloskirjaus</a>
-    <a href="/whoami">WhoAmI</a>
-    <a href="/registered">Rekisteröityneet</a>
-    <a href="/">Home</a>
+<div id="sivupalkki">
+  <ul class="nav">
+    <li><a href="/">Etusivu</a></li>
+    <li><a href="/hoitajat">Hallitse hoitajia</a></li>
+    <li><a href="/asiakkaanHallinta">Hallitse asiakkaita</a></li>
+    <li><a href="/hoitovuorot">Muodosta vuorolista</a><br></li>
+  </ul>
 </div>
-<br>
