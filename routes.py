@@ -11,7 +11,8 @@ def loginVaaditaan():
 @route("/")
 def etusivu():
     loginVaaditaan()
-    return template("front")
+    nimi = auth.loggedAs()
+    return template("front", nimi=nimi)
 
 
 @route('/static/<filepath:path>')
@@ -61,13 +62,6 @@ def register_post():
     except IntegrityError:
         return template("register", viesti="Valitsemasi käyttäjätunnus on jo käytössä")
     return template("rekOK")
-
-
-@route("/whoami")
-def whoami():
-    islogged = auth.isLogged()
-    name = auth.loggedAs()
-    return template("whoAmI", islogged=islogged, name=name)
 
 
 @route("/registered")
