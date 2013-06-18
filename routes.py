@@ -89,7 +89,7 @@ def hoitajat_post():
     try:
         hoitajat.uusi(nimi, luvat)
     except:
-        return template("hoitajat",hoitajat = hoitajat.kaikki(),
+        return template("hoitajat",hoitajat=hoitajat.kaikki(),
                         virheviesti="Hoitajan lisäys epäonnistui")
     redirect("/hoitajat")
 
@@ -130,6 +130,7 @@ def lisaaVuoro_post():
 
 @route("/hoitovuorot")
 def hoitovuorot():
+    loginVaaditaan()
     # TODO: luo hoitovuorot jossain muualla
     # jakaa hoitovuoron mahdollisista hoitajista aina sille, jolla on
     # vähiten käyntejä
