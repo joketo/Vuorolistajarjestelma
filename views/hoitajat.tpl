@@ -1,3 +1,6 @@
+%setdefault('virheviesti', None)
+%include virhe virheviesti=virheviesti
+
 %from vakioita import luvat
 <p>Tässä voit lisätä uuden hoitajan tietokantaan<p>
 

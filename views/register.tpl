@@ -1,7 +1,7 @@
+%setdefault('virheviesti', None)
+%include virhe virheviesti=virheviesti
+
 <h3>Rekisteröityminen</h3>
-%if viesti:
-<p style="color: red; font-size:12px">{{viesti}}</p>
-%end 
 <form method="POST" action="/register">
   Tunnus: <input name="name" type="text" /> <br>
   Salasana: <input name="password1" type="password" /> <br>

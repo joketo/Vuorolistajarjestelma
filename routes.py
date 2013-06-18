@@ -60,7 +60,7 @@ def register_post():
     try:
         auth.register(name, password1)
     except IntegrityError:
-        return template("register", viesti="Valitsemasi käyttäjätunnus on jo käytössä")
+        return template("register", virheviesti="Valitsemasi käyttäjätunnus on jo käytössä")
     return template("rekOK")
 
 
@@ -101,6 +101,7 @@ def asiakkaat_post():
     try:
         asiakkaat.uusi(nimi)
     except Exception:
+        print("}???")
         return template("asiakkaanHallinta", asiakkaat=asiakkaat.kaikki(), 
                         virheviesti="Asiakkaan lisäys epäonnistui")
         

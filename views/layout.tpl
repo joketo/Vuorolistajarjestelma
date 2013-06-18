@@ -12,8 +12,6 @@
       %include ylapalkki otsikko=otsikko
       %include navigaatio
       <div id="content">
-        %setdefault('virheviesti', None)
-        %include virhe virheviesti=virheviesti
         %include
       </div>
       %include footer
