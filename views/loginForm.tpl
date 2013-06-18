@@ -1,4 +1,4 @@
-%include header
+
 <h3>Tervetuloa Vuorolistajärjestelmään!</h3>
 <h2>Kirjaudu sisään</h2>
 %if viesti:
@@ -13,4 +13,4 @@
 </form>
 <p>Etkö ole rekisteröitynyt?</p>
 <a href="/register">Rekisteröidy täällä</a>
-%include footer
+%rebase loginlayout otsikko="Kirjaudu"

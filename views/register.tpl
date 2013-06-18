@@ -1,4 +1,3 @@
-%include header
 <h3>Rekisteröityminen</h3>
 %if viesti:
 <p style="color: red; font-size:12px">{{viesti}}</p>
@@ -11,4 +10,4 @@
 </form>
 
 <a href="/">Etusivulle</a>
-%include footer
+%rebase loginlayout otsikko="Rekisteröidy"
