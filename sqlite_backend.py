@@ -48,9 +48,10 @@ class Hoitajat(object):
         if hoitajaid:
             dbDelete(self.conn, "DELETE FROM hoitajat rowid=?", (hoitajaid,))
         else:
-            hoitajaid = dbSelect(self.conn, "SELECT rowid from hoitajat where nimi=?", (nimi,))
+            hoitajaid = dbSelect(self.conn, "SELECT rowid from hoitajat where nimi=?", 
+                                 (nimi,))[0][0]
             dbDelete(self.conn, "DELETE FROM hoitajat where nimi=?", (nimi,))
-        poistaLuvat(hoitajaid)
+        self.poistaLuvat(hoitajaid)
 
     def poistaLuvat(self, hoitajaid):
         dbDelete(self.conn, "DELETE FROM hoitajaluvat where hoitajaid=?", (hoitajaid,))

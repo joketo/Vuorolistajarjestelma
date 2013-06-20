@@ -22,4 +22,5 @@
   %end
 </p>
 
+%include poistaHoitaja hoitajat=hoitajat
 %rebase layout otsikko="Hallitse hoitajia"
