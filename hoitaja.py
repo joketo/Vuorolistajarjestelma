@@ -7,6 +7,7 @@ class Hoitaja(object):
         self.luvat = luvat
 
     def onkoLuvat(self, luvat):
+        """tarkistaa onko annetut luvat"""
         for lupa in luvat:
             if not lupa in self.luvat:
                 return False
