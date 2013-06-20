@@ -39,6 +39,22 @@ class Hoitajat(object):
         luvat = self.haeLuvat(hoitajaid)
         return Hoitaja(hoitajaid, nimi, luvat)
 
+    def poista(self, hoitajaid=None, nimi=None):
+        #TODO: transaktioi tämä
+        """Poistaa tietokannasta nimen tai id:n perusteella"""
+        if not hoitajaid and not nimi:
+            raise TypeError("hae tarvitsee argumentin hoitajaid tai nimi")
+
+        if hoitajaid:
+            dbDelete(self.conn, "DELETE FROM hoitajat rowid=?", (hoitajaid,))
+        else:
+            hoitajaid = dbSelect(self.conn, "SELECT rowid from hoitajat where nimi=?", (nimi,))
+            dbDelete(self.conn, "DELETE FROM hoitajat where nimi=?", (nimi,))
+        poistaLuvat(hoitajaid)
+
+    def poistaLuvat(self, hoitajaid):
+        dbDelete(self.conn, "DELETE FROM hoitajaluvat where hoitajaid=?", (hoitajaid,))
+
     def kaikki(self):
         hoitajaidt = dbSelect(self.conn, """SELECT rowid from hoitajat""")
         #TODO: onko tämä hidasta?
@@ -58,7 +74,7 @@ class Hoitajat(object):
     def haeLuvat(self, hoitajaId):
         luvat = dbSelect(self.conn, """SELECT lupa from hoitajaluvat
                      where hoitajaid = ?""", (hoitajaId,))
-        return map(lambda a: a[0], luvat)
+        return [a[0] for a in luvat]
 
     def luoLuvat(self, hoitajaId, luvat):
         for l in luvat:
@@ -146,6 +162,8 @@ def dbInsert(conn, insertstr, params=None):
     conn.commit()
     return rowid
 
+def dbDelete(conn, insertstr, params=None):
+    return dbInsert(conn, insertstr, params)
 
 def dbSelect(conn, selectstr, params=None):
     """Suorita annettu tietokantahaku ja palauta tietokannalta tulleet arvot"""
