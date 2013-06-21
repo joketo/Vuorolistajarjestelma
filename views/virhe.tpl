@@ -1,5 +1,5 @@
 %if virheviesti:
-<p id="error">
+<p class="error">
   {{virheviesti}}
 </p>
 %end

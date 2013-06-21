@@ -8,10 +8,10 @@
     <link rel="stylesheet" type="text/css" href="/static/style.css">
   </head>
   <body>
-    <div id="container">
+    <div class="container">
       %include ylapalkki otsikko=otsikko
       %include navigaatio
-      <div id="content">
+      <div class="content">
         %include
       </div>
       %include footer

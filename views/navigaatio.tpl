@@ -1,4 +1,4 @@
-<div id="sivupalkki">
+<div class="pystynav">
   <ul class="nav">
     <li><a href="/">Etusivu</a></li>
     <li><a href="/hoitajat">Hallitse hoitajia</a></li>

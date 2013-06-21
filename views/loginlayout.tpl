@@ -8,11 +8,11 @@
     <link rel="stylesheet" type="text/css" href="/static/style.css">
   </head>
   <body>
-    <div id="container">
-      <div id="header">        
+    <div class="container">
+      <div class="header">        
         <h1>{{otsikko}}</h1>
       </div>
-      <div id="content">
+      <div class="content">
         %include
       </div>
       %include footer
