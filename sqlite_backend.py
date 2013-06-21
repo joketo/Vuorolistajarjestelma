@@ -23,7 +23,6 @@ class Users(object):
 
 class Hoitajat(object):
     """Luokka Hoitaja-olioiden hakuun ja lisäykseen tietokannasta"""
-    #TODO: luvat pitää nyt hakea lupataulusta
     def __init__(self, tkyhteys):
         self.conn = tkyhteys
 
@@ -58,7 +57,6 @@ class Hoitajat(object):
 
     def kaikki(self):
         hoitajaidt = dbSelect(self.conn, """SELECT rowid from hoitajat""")
-        #TODO: onko tämä hidasta?
         return [self.hae(hid[0]) for hid in hoitajaidt]
 
     def uusi(self, nimi, luvat):
@@ -72,6 +70,21 @@ class Hoitajat(object):
         hoitsut = self.kaikki()
         return filter(lambda h: h.onkoLuvat(luvat), hoitsut)
 
+    def haeVuorolleSopivat(self, vuoroid):
+        print("vuoroid: ", vuoroid)
+        hoitajaidt = dbSelect(self.conn,
+                              """SELECT hoitajaid FROM hoitajaluvat
+                                 JOIN (SELECT lupa FROM kayntiluvat
+                                       WHERE rowid=?) using (lupa)
+                                 GROUP BY hoitajaid
+                                 HAVING count(*) = (select count(*) from (SELECT lupa FROM kayntiluvat
+                                       WHERE rowid=?))
+                                 ORDER BY hoitajaid"""
+                              , (vuoroid,vuoroid))[0]
+        hoitajat = [self.hae(hoitajaid=hid) for hid in hoitajaidt]
+        return hoitajat
+        
+
     def haeLuvat(self, hoitajaId):
         luvat = dbSelect(self.conn, """SELECT lupa from hoitajaluvat
                      where hoitajaid = ?""", (hoitajaId,))
@@ -81,6 +94,7 @@ class Hoitajat(object):
         for l in luvat:
             dbInsert(self.conn, """INSERT into hoitajaluvat (hoitajaid, lupa)
                          values (?,?)""", (hoitajaId, l))
+        
 
 
 class Asiakkaat(object):
@@ -107,7 +121,6 @@ class Asiakkaat(object):
 
     def kaikki(self):
         asiakasidt = dbSelect(self.conn, "SELECT rowid from asiakkaat")
-        #TODO: onko tämä hidasta?
         return [self.hae(aid[0]) for aid in asiakasidt]
 
     def uusi(self, nimi):
@@ -164,12 +177,14 @@ def dbInsert(conn, insertstr, params=None):
     return rowid
 
 def dbDelete(conn, insertstr, params=None):
+    """Järkevämmän kuuloinen alias dbInsertille poistoja varten"""
     return dbInsert(conn, insertstr, params)
 
 def dbSelect(conn, selectstr, params=None):
     """Suorita annettu tietokantahaku ja palauta tietokannalta tulleet arvot"""
     c = conn.cursor()
     if params:
+        print("dbselect-parametrit: ", params)
         c.execute(selectstr, params)
     else:
         c.execute(selectstr)

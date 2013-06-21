@@ -16,3 +16,6 @@ class Hoitaja(object):
     def sopiikoKaynti(self, kaynti):
         return self.onkoLuvat(kaynti.vaatimukset)
 
+    def __repr__(self):
+        return self.nimi + " " + str(self.luvat)
+
