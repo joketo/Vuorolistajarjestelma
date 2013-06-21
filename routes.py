@@ -94,6 +94,15 @@ def hoitajat_post():
     redirect("/hoitajat")
 
 
+@route("/poistaHoitaja", method="POST")
+def poistaHoitaja():
+    loginVaaditaan()
+    hoitaja = request.forms.getunicode("poistettava")
+    print(hoitaja)
+    hoitajat.poista(nimi=hoitaja)
+    redirect("/hoitajat")
+
+
 @route("/asiakkaat", method="POST")
 def asiakkaat_post():
     loginVaaditaan()
@@ -101,7 +110,6 @@ def asiakkaat_post():
     try:
         asiakkaat.uusi(nimi)
     except Exception:
-        print("}???")
         return template("asiakkaanHallinta", asiakkaat=asiakkaat.kaikki(), 
                         virheviesti="Asiakkaan lisäys epäonnistui")
         

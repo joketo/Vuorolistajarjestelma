@@ -18,8 +18,13 @@
 <p style = "color:green">Kantaan talletetut hoitajat:</p>
 <p>
   %for h in hoitajat:
+  %if h.luvat:
   {{h.nimi + ": " + ", ".join(h.luvat)}}<br>
+  %else:
+  {{h.nimi + ": ei lupia"}}<br>
+  %end
   %end
 </p>
 
+%include poistaHoitaja hoitajat=hoitajat
 %rebase layout otsikko="Hallitse hoitajia"
