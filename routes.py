@@ -146,7 +146,7 @@ def hoitovuorot():
     hoitokerrat = {h: 0 for h in map(lambda h: h.nimi, hoitajat.kaikki())}
     hoitovuorot = {h: [] for h in map(lambda h: h.nimi, hoitajat.kaikki())}
     for k in asiakkaat.kaikkiKaynnit():
-        sopivat = hoitajat.haeSopivat(k.luvat)
+        sopivat = hoitajat.haeSopivatVuorolla(k.kayntiid)
         hoitaja = min(sopivat, key=lambda k: hoitokerrat[k.nimi])
         hoitokerrat[hoitaja.nimi] += 1
         hoitovuorot[hoitaja.nimi].append(k)

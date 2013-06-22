@@ -70,7 +70,7 @@ class Hoitajat(object):
         hoitsut = self.kaikki()
         return filter(lambda h: h.onkoLuvat(luvat), hoitsut)
 
-    def haeVuorolleSopivat(self, vuoroid):
+    def haeSopivatVuorolla(self, vuoroid):
         print("vuoroid: ", vuoroid)
         hoitajaidt = dbSelect(self.conn,
                               """SELECT hoitajaid FROM hoitajaluvat
