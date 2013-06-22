@@ -162,6 +162,13 @@ class Asiakkaat(object):
         luvat = dbSelect(self.conn,
                          "SELECT lupa from kayntiluvat where kayntiid=?", (kayntiId,))
         return [l[0] for l in luvat]
+        
+    def poistaKaynti(self, kayntiId):
+        dbDelete(self.conn, "DELETE FROM kaynnit where rowid=?", (kayntiId,))
+        self.poistaKayntiLuvat(kayntiId)
+        
+    def poistaKayntiLuvat(self, kayntiId):
+        dbDelete(self.conn, "DELETE FROM kayntiluvat where kayntiid=?", (kayntiId,))
 
 
 def dbInsert(conn, insertstr, params=None):
@@ -184,7 +191,6 @@ def dbSelect(conn, selectstr, params=None):
     """Suorita annettu tietokantahaku ja palauta tietokannalta tulleet arvot"""
     c = conn.cursor()
     if params:
-        print("dbselect-parametrit: ", params)
         c.execute(selectstr, params)
     else:
         c.execute(selectstr)

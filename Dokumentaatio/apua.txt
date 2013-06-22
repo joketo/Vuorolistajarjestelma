@@ -10,7 +10,6 @@ source bin/activate
 
 
 TODO
--vuorojen poistaminen, hoitajien ja asiakkaiden muokkaus ja poisto
+-vuorojen poistaminen, asiakkaiden muokkaus ja poisto
 -järkevät virheviestit ja virheiden tarkistus yleensäkin
 -vuorojen jako ajan mukaan
--vuoronjaossa näkyy, kuinka paljon kullakin menee aikaa asiakkaissaan yhteensä

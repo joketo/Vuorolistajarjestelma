@@ -107,6 +107,9 @@ def poistaHoitaja():
 def asiakkaat_post():
     loginVaaditaan()
     nimi = request.forms.getunicode("nimi")
+    if not nimi:
+        return template("asiakkaanHallinta", asiakkaat=asiakkaat.kaikki(), 
+                        virheviesti="Asiakkaalla tulee olla nimi")
     try:
         asiakkaat.uusi(nimi)
     except Exception:
@@ -152,5 +155,12 @@ def hoitovuorot():
         hoitovuorot[hoitaja.nimi].append(k)
 
     return template("hoitovuorot", hoitajat=hoitovuorot)
+
+@route("/poistaKaynti", method="POST")
+def poistaKaynti():
+    kayntiId = request.forms.getunicode("kayntiid")
+    asiakkaat.poistaKaynti(kayntiId)
+    print (kayntiId)
+    redirect("/asiakkaanHallinta")
 
 
