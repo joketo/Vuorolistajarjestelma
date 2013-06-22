@@ -45,15 +45,15 @@ class Hoitajat(object):
             raise TypeError("hae tarvitsee argumentin hoitajaid tai nimi")
 
         if hoitajaid:
-            dbDelete(self.conn, "DELETE FROM hoitajat rowid=?", (hoitajaid,))
+             dbAction(self.conn, "DELETE FROM hoitajat rowid=?", (hoitajaid,))
         else:
             hoitajaid = dbSelect(self.conn, "SELECT rowid from hoitajat where nimi=?", 
                                  (nimi,))[0][0]
-            dbDelete(self.conn, "DELETE FROM hoitajat where nimi=?", (nimi,))
+            dbAction(self.conn, "DELETE FROM hoitajat where nimi=?", (nimi,))
         self.poistaLuvat(hoitajaid)
 
     def poistaLuvat(self, hoitajaid):
-        dbDelete(self.conn, "DELETE FROM hoitajaluvat where hoitajaid=?", (hoitajaid,))
+         dbAction(self.conn, "DELETE FROM hoitajaluvat where hoitajaid=?", (hoitajaid,))
 
     def kaikki(self):
         hoitajaidt = dbSelect(self.conn, """SELECT rowid from hoitajat""")
@@ -70,18 +70,30 @@ class Hoitajat(object):
         hoitsut = self.kaikki()
         return filter(lambda h: h.onkoLuvat(luvat), hoitsut)
 
-    def haeSopivatVuorolla(self, vuoroid):
-        print("vuoroid: ", vuoroid)
+    def haeSopivatVuorolla(self, kayntiid):
+        dbAction(self.conn,
+                 """
+                 CREATE TEMP TABLE vaaditut AS 
+                 SELECT lupa FROM kayntiluvat
+                 WHERE kayntiid=?
+                 """, (kayntiid,))
+ 
         hoitajaidt = dbSelect(self.conn,
-                              """SELECT hoitajaid FROM hoitajaluvat
-                                 JOIN (SELECT lupa FROM kayntiluvat
-                                       WHERE rowid=?) using (lupa)
-                                 GROUP BY hoitajaid
-                                 HAVING count(*) = (select count(*) from (SELECT lupa FROM kayntiluvat
-                                       WHERE rowid=?))
-                                 ORDER BY hoitajaid"""
-                              , (vuoroid,vuoroid))[0]
-        hoitajat = [self.hae(hoitajaid=hid) for hid in hoitajaidt]
+                              """
+                              SELECT   hoitajaid hid
+                              FROM     hoitajaluvat
+                              GROUP BY hoitajaid
+                              HAVING   (SELECT count(*) 
+                                        FROM hoitajaluvat 
+                                        JOIN vaaditut USING (lupa)
+                                        WHERE hoitajaid = hid) =
+                                       (SELECT count(*)
+                                        FROM vaaditut)
+                              """)
+        dbAction(self.conn,"DROP TABLE vaaditut")
+
+        print(kayntiid, ": ", hoitajaidt)
+        hoitajat = [self.hae(hoitajaid=hid[0]) for hid in hoitajaidt]
         return hoitajat
         
 
@@ -164,11 +176,11 @@ class Asiakkaat(object):
         return [l[0] for l in luvat]
         
     def poistaKaynti(self, kayntiId):
-        dbDelete(self.conn, "DELETE FROM kaynnit where rowid=?", (kayntiId,))
-        self.poistaKayntiLuvat(kayntiId)
+         dbAction(self.conn, "DELETE FROM kaynnit where rowid=?", (kayntiId,))
+         self.poistaKayntiLuvat(kayntiId)
         
     def poistaKayntiLuvat(self, kayntiId):
-        dbDelete(self.conn, "DELETE FROM kayntiluvat where kayntiid=?", (kayntiId,))
+         dbAction(self.conn, "DELETE FROM kayntiluvat where kayntiid=?", (kayntiId,))
 
 
 def dbInsert(conn, insertstr, params=None):
@@ -183,9 +195,10 @@ def dbInsert(conn, insertstr, params=None):
     conn.commit()
     return rowid
 
-def dbDelete(conn, insertstr, params=None):
+def dbAction(conn, insertstr, params=None):
     """Järkevämmän kuuloinen alias dbInsertille poistoja varten"""
     return dbInsert(conn, insertstr, params)
+
 
 def dbSelect(conn, selectstr, params=None):
     """Suorita annettu tietokantahaku ja palauta tietokannalta tulleet arvot"""
