@@ -1,4 +1,4 @@
-from bottle import route, run, template, response, request, redirect, static_file
+from bottle import route, run, template, response, request, redirect, static_file, app
 from main import auth, conn, hoitajat, asiakkaat
 from sqlite3 import IntegrityError
 
@@ -13,6 +13,11 @@ def etusivu():
     loginVaaditaan()
     nimi = auth.loggedAs()
     return template("front", nimi=nimi)
+    
+@route("/test")
+def test():
+    app().message = "testi toimii"
+    return "test"
 
 
 @route('/static/<filepath:path>')
@@ -22,7 +27,7 @@ def server_static(filepath):
 
 @route("/login")
 def login_form():
-    return template("loginForm", viesti=None)
+    return template("loginForm", virheviesti=None)
 
 
 @route("/login", method="POST")
@@ -34,7 +39,7 @@ def login_submit():
         auth.login(name, password)
     # Innokas except jottei loginin epäonnistumisviesti anna vihjeitä hyökkääjälle
     except:
-        return template("loginForm", viesti="Sisäänkirjautuminen epäonnistui")
+        return template("loginForm", virheviesti="Kirjautuminen epäonnistui")
     redirect("/")
 
 
@@ -46,7 +51,7 @@ def logout():
 
 @route("/register")
 def register_get():
-    return template("register", viesti=None)
+    return template("register", virheviesti=None)
 
 
 @route("/register", method="POST")
@@ -56,7 +61,7 @@ def register_post():
     password2 = request.forms.getunicode("password2")
     
     if password1 != password2:
-        return template("register", viesti="Salasanat eivät täsmää")
+        return template("register", virheviesti="Salasanat eivät täsmää")
     try:
         auth.register(name, password1)
     except IntegrityError:
@@ -149,7 +154,7 @@ def hoitovuorot():
     hoitokerrat = {h: 0 for h in map(lambda h: h.nimi, hoitajat.kaikki())}
     hoitovuorot = {h: [] for h in map(lambda h: h.nimi, hoitajat.kaikki())}
     for k in asiakkaat.kaikkiKaynnit():
-        sopivat = hoitajat.haeSopivatVuorolla(k.kayntiid)
+        sopivat = hoitajat.haeSopivatKaynnilla(k.kayntiid)
         hoitaja = min(sopivat, key=lambda k: hoitokerrat[k.nimi])
         hoitokerrat[hoitaja.nimi] += 1
         hoitovuorot[hoitaja.nimi].append(k)

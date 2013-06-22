@@ -1,10 +1,8 @@
 
 <h3>Tervetuloa Vuorolistajärjestelmään!</h3>
 <h2>Kirjaudu sisään</h2>
-%if viesti:
-<p style="color: red; font-size:12px">{{viesti}}</p>
-%end
-
+%setdefault('virheviesti', None)
+%include virhe virheviesti=virheviesti
 
 <form method="POST" action="/login">
   Tunnus: <input name="name"     type="text" /><br>

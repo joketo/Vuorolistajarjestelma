@@ -70,7 +70,10 @@ class Hoitajat(object):
         hoitsut = self.kaikki()
         return filter(lambda h: h.onkoLuvat(luvat), hoitsut)
 
-    def haeSopivatVuorolla(self, kayntiid):
+    def haeSopivatKaynnilla(self, kayntiid):
+        """Palauttaa listan hoitajista, joilla on sopivat luvat annetun 
+        käynnin hoitamiseksi."""
+
         dbAction(self.conn,
                  """
                  CREATE TEMP TABLE vaaditut AS 
