@@ -1,5 +1,5 @@
 import sqlite3
-
+import sys
 
 def usedb(dbname, dbstring, createparams=tuple()):
     conn = sqlite3.connect(dbname)
@@ -8,8 +8,6 @@ def usedb(dbname, dbstring, createparams=tuple()):
     conn.commit()
     conn.close()
 
-
-#TODO: sqlite lisää automaattisesti nopeasti hakevat rowid:t! turhat tauhkat pois...
 def create_users(dbname):
     usedb(dbname, """CREATE TABLE users
                     (id integer primary key autoincrement, username text unique not null, 
@@ -43,10 +41,15 @@ def create_hoitajaluvat(dbname):
     usedb(dbname, """CREATE TABLE hoitajaluvat
                      (hoitajaid integer, lupa text)""")
 
-db = "test.db"
-create_users(db)
-create_hoitsut(db)
-create_asiakkaat(db)
-create_kaynnit(db)
-create_kayntiluvat(db)
-create_hoitajaluvat(db)
+def create_all(db):
+    create_users(db)
+    create_hoitsut(db)
+    create_asiakkaat(db)
+    create_kaynnit(db)
+    create_kayntiluvat(db)
+    create_hoitajaluvat(db)
+
+if __name__ == '__main__':
+    dbname = "test.db" if len(sys.argv)<2 else sys.argv[1]
+    create_all(dbname)
+
