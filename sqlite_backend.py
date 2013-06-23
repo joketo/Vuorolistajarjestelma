@@ -235,7 +235,6 @@ class Vakiot(object):
 
     def ajat(self):
         ajat = dbSelect(self.conn, "SELECT id, aika FROM ajat ORDER BY id")
-        print("aika", ajat)
         return ajat
 
     def kestot(self):
