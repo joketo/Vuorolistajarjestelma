@@ -1,3 +1,7 @@
+"""
+Tämä moduuli sisältää llioita sql-tietokannan käyttöä varten.
+"""
+
 from user import User
 from hoitaja import Hoitaja
 from asiakas import Asiakas
@@ -107,7 +111,8 @@ class Hoitajat(object):
         
 
 class Asiakkaat(object):
-    """Luokka asiakkaiden räpläykseen tietokantaan/kannasta"""
+    """Luokka asiakkaiden ja niihin liittyvien käyntien räpläykseen 
+    tietokantaan/kannasta."""
     def __init__(self, tkyhteys):
         self.conn = tkyhteys
 
@@ -160,7 +165,7 @@ class Asiakkaat(object):
         for rivi in kayntirivit:
             luvat = self.haeKayntiLuvat(rivi[0])
             luvat = [l[1] for l in luvat]
-            kaynnit.append(Kaynti(rivi[0], self, rivi[1], luvat, rivi[2], rivi[3], rivi[4]))
+            kaynnit.append(Kaynti(rivi[0], rivi[1], luvat, rivi[2], rivi[3], rivi[4]))
         return kaynnit
 
     def kaikkiKaynnit(self):
@@ -175,7 +180,7 @@ class Asiakkaat(object):
         for rivi in kayntirivit:
             luvat = self.haeKayntiLuvat(rivi[0])
             luvat = [l[1] for l in luvat]
-            kaynnit.append(Kaynti(rivi[0], self, rivi[1], luvat, rivi[2], rivi[3], rivi[4]))
+            kaynnit.append(Kaynti(rivi[0], rivi[1], luvat, rivi[2], rivi[3], rivi[4]))
         return kaynnit
 
     def lisaaKayntiLupa(self, kayntiId, lupaid):

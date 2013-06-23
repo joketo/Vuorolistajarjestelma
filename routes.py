@@ -1,3 +1,7 @@
+"""
+routes.py sisältää Bottlen handlerit eri osoitteille
+"""
+
 from bottle import route, template, request, redirect, static_file, app
 from sqlite3 import IntegrityError
 

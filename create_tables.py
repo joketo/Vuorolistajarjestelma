@@ -1,5 +1,7 @@
-#Skripta tyhjän tietokannan luomiseen, tätä voi käyttää stand-alonena
-#tai kutsua muusta koodista (main.py kutsuu tätä jos tietokantaa ei ole)
+"""
+Skripta tyhjän tietokannan luomiseen, tätä voi käyttää stand-alonena
+tai kutsua muusta koodista (main.py kutsuu tätä jos tietokantaa ei ole)
+"""
 
 import sqlite3
 import sys

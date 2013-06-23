@@ -1,5 +1,5 @@
 class Asiakas(object):
-    """Simple user info container"""
+    """Säiliöluokka asiakkaan tiedoille"""
     def __init__(self, asiakasid, nimi, kaynnit):
         self.asiakasid = asiakasid
         self.nimi = nimi
