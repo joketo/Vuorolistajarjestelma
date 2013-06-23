@@ -1,11 +1,9 @@
 import os
-import sys
 import argparse
 import bottle
 import sqlite3
 from beaker.middleware import SessionMiddleware
 
-import routes
 import create_tables
 from sqlite_backend import Hoitajat, Asiakkaat, Users, Vakiot
 from auth import Auth
@@ -16,7 +14,9 @@ if __name__ == '__main__':
     # TODO: väännä argparsen helppi suomeksi
     parser = argparse.ArgumentParser()
     parser.add_argument("-db", type=str, help="Tietokantatiedosto", default="test.db")
-    parser.add_argument("--nosync", "-n", help="Laita sqliten synkronointi pois. Vaarallinen mutta paljon nopeampi esim. nfs-jaolta ajaessa", action="store_true")
+    parser.add_argument("--nosync", "-n", help="Laita sqliten synkronointi pois."
+                                               + "Vaarallinen mutta paljon nopeampi esim. nfs-jaolta" +
+                                               " ajaessa", action="store_true")
     args = parser.parse_args()
     #onko tietokanta olemassa? jos ei, luo se
     if not os.path.isfile(args.db):
@@ -43,10 +43,12 @@ if __name__ == '__main__':
     app = SessionMiddleware(bottle.app(), session_opts)
 
     # tietokantaoliot käytettäviksi muulle ohjelmalle
+    # oliot löytyvät nyt Bottle.app().hoitajat jne.
     app.app.hoitajat = hoitajat
     app.app.asiakkaat = asiakkaat
     app.app.auth = auth
     app.app.vakiot = vakiot
+
     # päräytä itse ohjelma käyntiin
     bottle.run(app=app, host='localhost', port=8080, debug=True, reloader=True)
 
