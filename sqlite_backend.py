@@ -94,12 +94,12 @@ class Hoitajat(object):
                                   (SELECT count(*)
                                   FROM vaaditut)
                                   """)
-            dbAction(self.conn, "DROP TABLE vaaditut")
-
             # luo hoitajaoliot
             hoitajat = [self.hae(hoitajaid=hid[0]) for hid in hoitajaidt]
         else:
             hoitajat = self.kaikki()
+
+        dbAction(self.conn, "DROP TABLE vaaditut")
         return hoitajat
 
     def haeLuvat(self, hoitajaId):
