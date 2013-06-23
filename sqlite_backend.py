@@ -178,6 +178,17 @@ class Asiakkaat(object):
                          "SELECT lupa from kayntiluvat where kayntiid=?", (kayntiId,))
         return [l[0] for l in luvat]
         
+    def poistaAsiakas(self, asiakasId):
+        dbAction(self.conn, """
+                            BEGIN TRANSACTION
+                            DELETE FROM asiakkaat where rowid=?"
+                            DELETE FROM kayntiluvat
+                            WHERE kayntiid in (SELECT kayntiid FROM kaynnit
+                                               WHERE rowid=?)
+                            DELETE FROM kayntiluvat WHERE rowid=?
+                            """, (asiakasId, asiakasId, asiakasId))
+        
+
     def poistaKaynti(self, kayntiId):
          dbAction(self.conn, "DELETE FROM kaynnit where rowid=?", (kayntiId,))
          self.poistaKayntiLuvat(kayntiId)
