@@ -7,7 +7,6 @@ from sqlite3 import IntegrityError
 
 
 def loginVaaditaan():
-    return
     """Redirectaa login-sivulle jos käyttäjä ei ole kirjautunut"""
     if not app().auth.isLogged():
         redirect("/login")
