@@ -3,6 +3,7 @@ from sqlite3 import IntegrityError
 
 
 def loginVaaditaan():
+    return
     if not app().auth.isLogged():
         redirect("/login")
 
@@ -70,7 +71,8 @@ def register_post():
 def hoitajat_get():
     loginVaaditaan()
     hoitsut = app().hoitajat.kaikki()
-    return template("hoitajat", hoitajat=hoitsut)
+    luvat = app().vakiot.luvat()
+    return template("hoitajat", hoitajat=hoitsut, luvat=luvat)
     
 
 @route("/hoitajat", method="POST")
@@ -80,11 +82,11 @@ def hoitajat_post():
     luvat = request.forms.getall("lupa")
     # kai tähän pitää olla fiksumpi tapa, ei ole getallunicode()-metodia...
     luvat = [l.encode("latin-1").decode("utf8") for l in luvat]
-    try:
-        app().hoitajat.uusi(nimi, luvat)
-    except:
-        return template("hoitajat",hoitajat=app().hoitajat.kaikki(),
-                        virheviesti="Hoitajan lisäys epäonnistui")
+#    try:
+    app().hoitajat.uusi(nimi, luvat)
+#    except Exception:
+#        return template("hoitajat",hoitajat=app().hoitajat.kaikki(),
+#                        virheviesti="Hoitajan lisäys epäonnistui")
     redirect("/hoitajat")
 
 
@@ -116,7 +118,8 @@ def asiakkaat_post():
 @route("/asiakkaanHallinta")
 def asiakkaanHallinta():
     loginVaaditaan()
-    return template("asiakkaanHallinta", asiakkaat=app().asiakkaat.kaikki())
+    luvat = app().vakiot.luvat()
+    return template("asiakkaanHallinta", asiakkaat=app().asiakkaat.kaikki(), luvat=luvat)
     
 
 @route("/lisaaVuoro", method="POST")

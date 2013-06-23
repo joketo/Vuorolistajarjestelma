@@ -32,11 +32,11 @@ class Hoitajat(object):
             raise TypeError("hae tarvitsee argumentin hoitajaid tai nimi")
 
         if hoitajaid:
-            hoitajaid, nimi = dbSelect(self.conn, "SELECT rowid, nimi from hoitajat where rowid=?", (hoitajaid,))[0]
+            hoitajaid, nimi = dbSelect(self.conn, "SELECT id, nimi from hoitajat where id=?", (hoitajaid,))[0]
         else:
-            hoitajaid, nimi = dbSelect(self.conn, "SELECT rowid, nimi from hoitajat where nimi=?", (nimi,))[0]
+            hoitajaid, nimi = dbSelect(self.conn, "SELECT id, nimi from hoitajat where nimi=?", (nimi,))[0]
         luvat = self.haeLuvat(hoitajaid)
-        return Hoitaja(hoitajaid, nimi, luvat)
+        return Hoitaja(hoitajaid, nimi, [a[1] for a in luvat])
 
     def poista(self, hoitajaid=None, nimi=None):
         #TODO: transaktioi tämä
@@ -45,9 +45,9 @@ class Hoitajat(object):
             raise TypeError("hae tarvitsee argumentin hoitajaid tai nimi")
 
         if hoitajaid:
-             dbAction(self.conn, "DELETE FROM hoitajat rowid=?", (hoitajaid,))
+             dbAction(self.conn, "DELETE FROM hoitajat id=?", (hoitajaid,))
         else:
-            hoitajaid = dbSelect(self.conn, "SELECT rowid from hoitajat where nimi=?", 
+            hoitajaid = dbSelect(self.conn, "SELECT id from hoitajat where nimi=?", 
                                  (nimi,))[0][0]
             dbAction(self.conn, "DELETE FROM hoitajat where nimi=?", (nimi,))
 
@@ -55,7 +55,7 @@ class Hoitajat(object):
          dbAction(self.conn, "DELETE FROM hoitajaluvat where hoitajaid=?", (hoitajaid,))
 
     def kaikki(self):
-        hoitajaidt = dbSelect(self.conn, """SELECT rowid from hoitajat""")
+        hoitajaidt = dbSelect(self.conn, """SELECT id from hoitajat""")
         return [self.hae(hid[0]) for hid in hoitajaidt]
 
     def uusi(self, nimi, luvat):
@@ -100,9 +100,10 @@ class Hoitajat(object):
         
 
     def haeLuvat(self, hoitajaId):
-        luvat = dbSelect(self.conn, """SELECT lupaid from hoitajaluvat
-                     where hoitajaid = ?""", (hoitajaId,))
-        return [a[0] for a in luvat]
+        luvat = dbSelect(self.conn, """SELECT lupaid, lupa from hoitajaluvat, luvat
+                                       WHERE  lupaid = luvat.id
+                                       AND    hoitajaid = ?""", (hoitajaId,))
+        return luvat
 
     def luoLuvat(self, hoitajaId, luvat):
         for l in luvat:
@@ -155,6 +156,7 @@ class Asiakkaat(object):
         kaynnit = []
         for rivi in kayntirivit:
             luvat = self.haeKayntiLuvat(rivi[0])
+            luvat = [l[1] for l in luvat]
             kaynnit.append(Kaynti(rivi[0], self, rivi[1], luvat, rivi[2], rivi[3], rivi[4]))
         return kaynnit
 
@@ -165,6 +167,7 @@ class Asiakkaat(object):
         kaynnit = []
         for rivi in kayntirivit:
             luvat = self.haeKayntiLuvat(rivi[0])
+            luvat = [l[1] for l in luvat]
             kaynnit.append(Kaynti(rivi[0], self, rivi[1], luvat, rivi[2], rivi[3], rivi[4]))
         return kaynnit
 
@@ -174,8 +177,9 @@ class Asiakkaat(object):
 
     def haeKayntiLuvat(self, kayntiId):
         luvat = dbSelect(self.conn,
-                         "SELECT lupaid from kayntiluvat where kayntiid=?", (kayntiId,))
-        return [l[0] for l in luvat]
+                         """SELECT lupaid, lupa from kayntiluvat, luvat
+                            WHERE lupaid = luvat.id AND kayntiid=?""", (kayntiId,))
+        return [l for l in luvat]
         
     def poistaAsiakas(self, asiakasId):
         dbAction(self.conn, "DELETE FROM asiakkaat where id=?", (asiakasId, asiakasId, asiakasId))
@@ -198,8 +202,8 @@ class Vakiot(object):
         return [p[0] for p in paivat]
 
     def luvat(self):
-        luvat = dbSelect(self.conn, "SELECT lupa FROM luvat")
-        return [l[0] for l in luvat]
+        luvat = dbSelect(self.conn, "SELECT id, lupa FROM luvat")
+        return [l for l in luvat]
 
         
         

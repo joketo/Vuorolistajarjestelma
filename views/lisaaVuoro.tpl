@@ -1,4 +1,4 @@
-%from vakioita import paivat, ajat, kestot, luvat
+%from vakioita import paivat, ajat, kestot
 <p>Lisää valitsemallesi asiakkaalle hoitokäynti</p>
 <form method="POST" action="/lisaaVuoro">
     <select name="asiakas">
@@ -27,7 +27,7 @@
     </select><br>
     <p style = "color:green">Valitse lupavaatimukset käynnille</p>
         %for lupa in luvat:
-        <input type="checkbox" name="lupa" value="{{lupa}}">{{lupa}}
+        <input type="checkbox" name="lupa" value="{{lupa[0]}}">{{lupa[1]}}
         %end
         <br>
         <input type="submit" value="Lisää" />

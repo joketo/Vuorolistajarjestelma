@@ -7,7 +7,7 @@ from beaker.middleware import SessionMiddleware
 
 import routes
 import create_tables
-from sqlite_backend import Hoitajat, Asiakkaat, Users
+from sqlite_backend import Hoitajat, Asiakkaat, Users, Vakiot
 from auth import Auth
 
 
@@ -24,9 +24,11 @@ if __name__ == '__main__':
 
     #tietokantayhteys ja backend-oliot
     conn = sqlite3.connect(args.db)
+    conn.execute("PRAGMA foreign_keys = ON")
     hoitajat = Hoitajat(conn)
     asiakkaat = Asiakkaat(conn)
     auth = Auth(Users(conn))
+    vakiot = Vakiot(conn)
     
     if args.nosync:
         conn.execute("PRAGMA synchronous=OFF")
@@ -37,10 +39,14 @@ if __name__ == '__main__':
         'session.cookie_expires': 2000,
         'session.auto': True
     }
+    
     app = SessionMiddleware(bottle.app(), session_opts)
+
+    # tietokantaoliot käytettäviksi muulle ohjelmalle
     app.app.hoitajat = hoitajat
     app.app.asiakkaat = asiakkaat
     app.app.auth = auth
+    app.app.vakiot = vakiot
     # päräytä itse ohjelma käyntiin
     bottle.run(app=app, host='localhost', port=8080, debug=True, reloader=True)
 
