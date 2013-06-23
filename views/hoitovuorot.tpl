@@ -5,7 +5,7 @@
   %for kaynti in hoitajat[h]:
   <ul>
     %summa = summa + kaynti.kesto
-    <li>{{kaynti}}: {{kaynti.asiakas().nimi}}</li>
+    <li>{{kaynti}}: {{kaynti.asiakasnimi}}</li>
         
   </ul>
   %end

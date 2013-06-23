@@ -154,33 +154,38 @@ class Asiakkaat(object):
     def haeKaynnit(self, asiakasid):
         """Palauttaa listan, jossa on Kaynti-olio jokaista annetun asiakkaan käyntiä kohden"""
         kayntirivit = dbSelect(self.conn, 
-                               """SELECT kaynnit.id, asiakasid, paiva, aika, kesto FROM kaynnit, ajat, kestot, paivat
+                               """SELECT kaynnit.id, asiakasid, nimi, paiva, aika, kesto 
+                                  FROM kaynnit, ajat, kestot, paivat, asiakkaat
                                   WHERE  paivaid=paivat.id
                                   AND    aikaid=ajat.id
                                   AND    kestoid=kestot.id                               
+                                  AND    asiakkaat.id = ?
                                   AND    asiakasid = ?
-                               """, (asiakasid,))
+
+                               """, (asiakasid, asiakasid))
         # Luo käyntiriveistä kaynti-oliot
         kaynnit = []
         for rivi in kayntirivit:
             luvat = self.haeKayntiLuvat(rivi[0])
             luvat = [l[1] for l in luvat]
-            kaynnit.append(Kaynti(rivi[0], rivi[1], luvat, rivi[2], rivi[3], rivi[4]))
+            kaynnit.append(Kaynti(rivi[0], rivi[1], rivi[2], luvat, rivi[3], rivi[4], rivi[5]))
         return kaynnit
 
     def kaikkiKaynnit(self):
         """Palauttaa listan jossa on Kaynti-olio jokaista käyntiä kohden"""
         kayntirivit = dbSelect(self.conn,
-                               """SELECT kaynnit.id, asiakasid, paiva, aika, kesto FROM kaynnit, ajat, kestot, paivat
+                               """SELECT kaynnit.id, asiakasid, nimi, paiva, aika, kesto 
+                                  FROM kaynnit, ajat, kestot, paivat, asiakkaat
                                   WHERE  paivaid=paivat.id
                                   AND    aikaid=ajat.id
-                                  AND    kestoid=kestot.id""")
+                                  AND    kestoid=kestot.id
+                                  AND    asiakasid=asiakkaat.id""")
         # Luo käyntiriveistä kaynti-oliot
         kaynnit = []
         for rivi in kayntirivit:
             luvat = self.haeKayntiLuvat(rivi[0])
             luvat = [l[1] for l in luvat]
-            kaynnit.append(Kaynti(rivi[0], rivi[1], luvat, rivi[2], rivi[3], rivi[4]))
+            kaynnit.append(Kaynti(rivi[0], rivi[1], rivi[2], luvat, rivi[3], rivi[4], rivi[5]))
         return kaynnit
 
     def lisaaKayntiLupa(self, kayntiId, lupaid):

@@ -1,3 +1,8 @@
+"""
+Sisältää Auth-luokan jolla hallitaan käyttäjiä ja niiden
+autentikointia.
+"""
+
 import bcrypt
 from bottle import request
 

@@ -177,13 +177,20 @@ def hoitovuorot():
     # ovat lyhyitä verrattuna liikkumisaikaan
     hoitokerrat = {h: 0 for h in map(lambda h: h.nimi, app().hoitajat.kaikki())}
     hoitovuorot = {h: [] for h in map(lambda h: h.nimi, app().hoitajat.kaikki())}
+    vaillaHoitajaa = []
+
     for k in app().asiakkaat.kaikkiKaynnit():
         sopivat = app().hoitajat.haeSopivatKaynnilla(k.kayntiid)
+        if not sopivat:
+            vaillaHoitajaa.append(str(k))
+            continue
         hoitaja = min(sopivat, key=lambda k: hoitokerrat[k.nimi])
         hoitokerrat[hoitaja.nimi] += 1
         hoitovuorot[hoitaja.nimi].append(k)
 
-    return template("hoitovuorot", hoitajat=hoitovuorot)
+    if vaillaHoitajaa:
+        virheviesti = "Seuraaville käynneille ei lyötynyt hoitajaa: " + "; ".join(vaillaHoitajaa)
+    return template("hoitovuorot", hoitajat=hoitovuorot, virheviesti=virheviesti)
 
 
 @route("/poistaKayntiTaiAsiakas", method="POST")
