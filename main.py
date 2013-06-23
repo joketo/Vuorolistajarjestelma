@@ -15,7 +15,7 @@ if __name__ == '__main__':
     # hae komentoriviparametrit argparsella
     # TODO: väännä argparsen helppi suomeksi
     parser = argparse.ArgumentParser()
-    parser.add_argument("-db", type=str, help="Tietokantatiedosto")
+    parser.add_argument("-db", type=str, help="Tietokantatiedosto", default="test.db")
     parser.add_argument("--nosync", "-n", help="Laita sqliten synkronointi pois. Vaarallinen mutta paljon nopeampi esim. nfs-jaolta ajaessa", action="store_true")
     args = parser.parse_args()
     #onko tietokanta olemassa? jos ei, luo se
