@@ -178,6 +178,7 @@ def hoitovuorot():
     hoitokerrat = {h: 0 for h in map(lambda h: h.nimi, app().hoitajat.kaikki())}
     hoitovuorot = {h: [] for h in map(lambda h: h.nimi, app().hoitajat.kaikki())}
     vaillaHoitajaa = []
+    virheviesti = None
 
     for k in app().asiakkaat.kaikkiKaynnit():
         sopivat = app().hoitajat.haeSopivatKaynnilla(k.kayntiid)
