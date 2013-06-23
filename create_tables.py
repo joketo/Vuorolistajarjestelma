@@ -61,8 +61,12 @@ def create_luvat(dbname):
     usedb(dbname, """CREATE TABLE luvat
                      (id integer primary key autoincrement,
                       lupa text unique not null)""")
-    usedb(dbname, """INSERT INTO luvat (lupa)
-                    VALUES ("lääke"), ("haavat"), ("silmätipat"), ("piikit")""")
+    luvat = ["lääke", "haavat", "silmätipat", "piikit"]
+    for lupa in luvat:
+        usedb(dbname, """INSERT INTO luvat (lupa)
+                         VALUES ("?")""", (lupa,)
+#    usedb(dbname, """INSERT INTO luvat (lupa)
+#                    VALUES ("lääke"), ("haavat"), ("silmätipat"), ("piikit")""")
 
 
 def create_paivat(dbname):
