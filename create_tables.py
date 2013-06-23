@@ -67,8 +67,6 @@ def create_luvat(dbname):
     for lupa in luvat:
         usedb(dbname, """INSERT INTO luvat (lupa)
                          VALUES (?)""", (lupa,))
-#    usedb(dbname, """INSERT INTO luvat (lupa)
-#                    VALUES ("lääke"), ("haavat"), ("silmätipat"), ("piikit")""")
 
 
 def create_paivat(dbname):
@@ -81,9 +79,7 @@ def create_paivat(dbname):
     for paiva in paivat:
         usedb(dbname, """INSERT INTO paivat (paiva)
                          VALUES (?)""", (paiva,))
-#    usedb(dbname, """INSERT INTO paivat (paiva)
-#                     VALUES ("maanantai"), ("tiistai"),("keskiviikko"),
-#                     ("torstai"),("perjantai"),("lauantai"),("sunnuntai")""")
+                         
 
 def create_ajat(dbname):
     """Luo taulukon valideista aikaväleistä"""
@@ -95,9 +91,6 @@ def create_ajat(dbname):
     for aika in ajat:
         usedb(dbname, """INSERT INTO ajat (aika)
                          VALUES (?)""", (aika,))
-#    usedb(dbname, """INSERT INTO ajat (aika)
-#                     VALUES ("8-10"), ("10-12"), 
-#                     ("12-14"), ("16-20"), ("20-22")""")
 
 
 def create_kestot(dbname):
@@ -110,9 +103,6 @@ def create_kestot(dbname):
     for kesto in kestot:
         usedb(dbname, """INSERT INTO kestot (kesto)
                          VALUES (?)""", (kesto,))
-#    usedb(dbname, """INSERT INTO kestot (kesto)
-#                     VALUES (10), (15), (20), (30), 
-#                     (45), (50), (60)""")
 
 
 def create_all(db):
