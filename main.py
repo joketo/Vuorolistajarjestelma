@@ -1,3 +1,8 @@
+"""
+Ohjelman aloituskohta. main.py ottaa komentoriviltä asetukset, luo tietokantaoliot ja 
+Bottle-ohjelman jonka se myös laittaa käyntiin.
+"""
+
 import os
 import argparse
 import bottle

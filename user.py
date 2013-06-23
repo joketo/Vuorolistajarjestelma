@@ -1,5 +1,5 @@
 class User(object):
-    """Simple user info container"""
+    """Säiliöluokka käyttäjään liittyville tiedoille"""
     def __init__(self, userid, name, salt, pwhash):
         self.userid = userid
         self.name = name
