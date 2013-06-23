@@ -64,7 +64,7 @@ def create_luvat(dbname):
     luvat = ["lääke", "haavat", "silmätipat", "piikit"]
     for lupa in luvat:
         usedb(dbname, """INSERT INTO luvat (lupa)
-                         VALUES ("?")""", (lupa,)
+                         VALUES (?)""", (lupa,))
 #    usedb(dbname, """INSERT INTO luvat (lupa)
 #                    VALUES ("lääke"), ("haavat"), ("silmätipat"), ("piikit")""")
 
@@ -74,18 +74,28 @@ def create_paivat(dbname):
     usedb(dbname, """CREATE TABLE paivat
                      (id integer primary key autoincrement,
                       paiva text unique not null)""")
-    usedb(dbname, """INSERT INTO paivat (paiva)
-                     VALUES ("maanantai"), ("tiistai"),("keskiviikko"),
-                     ("torstai"),("perjantai"),("lauantai"),("sunnuntai")""")
+                      
+    paivat = ["maanantai", "tiistai", "keskiviikko", "torstai", "perjantai", "lauantai", "sunnuntai"]
+    for paiva in paivat:
+        usedb(dbname, """INSERT INTO paivat (paiva)
+                         VALUES (?)""", (paiva,))
+#    usedb(dbname, """INSERT INTO paivat (paiva)
+#                     VALUES ("maanantai"), ("tiistai"),("keskiviikko"),
+#                     ("torstai"),("perjantai"),("lauantai"),("sunnuntai")""")
 
 def create_ajat(dbname):
     """Luo taulukon valideista aikaväleistä"""
     usedb(dbname, """CREATE TABLE ajat
                      (id integer primary key autoincrement,
                       aika text unique not null)""")
-    usedb(dbname, """INSERT INTO ajat (aika)
-                     VALUES ("8-10"), ("10-12"), 
-                     ("12-14"), ("16-20"), ("20-22")""")
+     
+    ajat = ["8-10", "10-12", "12-14", "16-20", "20-22"]
+    for aika in ajat:
+        usedb(dbname, """INSERT INTO ajat (aika)
+                         VALUES (?)""", (aika,))
+#    usedb(dbname, """INSERT INTO ajat (aika)
+#                     VALUES ("8-10"), ("10-12"), 
+#                     ("12-14"), ("16-20"), ("20-22")""")
 
 
 def create_kestot(dbname):
@@ -93,9 +103,14 @@ def create_kestot(dbname):
     usedb(dbname, """CREATE TABLE kestot
                      (id integer primary key autoincrement,
                       kesto integer unique not null)""")
-    usedb(dbname, """INSERT INTO kestot (kesto)
-                     VALUES (10), (15), (20), (30), 
-                     (45), (50), (60)""")
+                      
+    kestot = [10, 15, 20, 30, 45, 50, 60]
+    for kesto in kestot:
+        usedb(dbname, """INSERT INTO kestot (kesto)
+                         VALUES (?)""", (kesto,))
+#    usedb(dbname, """INSERT INTO kestot (kesto)
+#                     VALUES (10), (15), (20), (30), 
+#                     (45), (50), (60)""")
 
 
 def create_all(db):
