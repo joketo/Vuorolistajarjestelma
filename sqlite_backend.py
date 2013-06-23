@@ -5,6 +5,7 @@ from kaynti import Kaynti
 
 
 class Users(object):
+    """Luokka tietokannan käyttäjien hallintaan"""
     def __init__(self, dbconnection):
         self.conn = dbconnection
 
@@ -39,8 +40,7 @@ class Hoitajat(object):
         return Hoitaja(hoitajaid, nimi, [a[1] for a in luvat])
 
     def poista(self, hoitajaid=None, nimi=None):
-        #TODO: transaktioi tämä
-        """Poistaa tietokannasta nimen tai id:n perusteella"""
+        """Poistaa tietokannasta nimen tai id:n perusteella."""
         if not hoitajaid and not nimi:
             raise TypeError("hae tarvitsee argumentin hoitajaid tai nimi")
 
@@ -51,28 +51,22 @@ class Hoitajat(object):
                                  (nimi,))[0][0]
             dbAction(self.conn, "DELETE FROM hoitajat where nimi=?", (nimi,))
 
-    def poistaLuvat(self, hoitajaid):
-         dbAction(self.conn, "DELETE FROM hoitajaluvat where hoitajaid=?", (hoitajaid,))
-
     def kaikki(self):
+        """Palauttaa Hoitaja-olion jokaista taulun hoitajaa kohden"""
         hoitajaidt = dbSelect(self.conn, """SELECT id from hoitajat""")
         return [self.hae(hid[0]) for hid in hoitajaidt]
 
-    def uusi(self, nimi, luvat):
+    def uusi(self, nimi, lupaidt):
+        """Luo uusi hoitaja"""
         hoitajaId = dbInsert(self.conn, """INSERT INTO hoitajat (nimi)
                      VALUES (?)""", (nimi,))
-        self.luoLuvat(hoitajaId, luvat)
-
-    def haeSopivat(self, luvat):
-        """Palauttaa listan hoitajista jotka täyttävät annetut luvat"""
-        #TODO: tee tämä näppärällä sql-haulla
-        hoitsut = self.kaikki()
-        return filter(lambda h: h.onkoLuvat(luvat), hoitsut)
+        self.luoLuvat(hoitajaId, lupaidt)
 
     def haeSopivatKaynnilla(self, kayntiid):
         """Palauttaa listan hoitajista, joilla on sopivat luvat annetun 
         käynnin hoitamiseksi."""
 
+        # luo väliaikainen taulu ettei tarvitse hakea näitä useaan otteeseen
         dbAction(self.conn,
                  """
                  CREATE TEMP TABLE vaaditut AS 
@@ -80,6 +74,8 @@ class Hoitajat(object):
                  WHERE kayntiid=?
                  """, (kayntiid,))
  
+        # idea: hae sellaiset hoitajaid:t joilla lupien ja vaadittujen
+        # lupien leikkaus on kooltaan yhtä suuri kuin vaaditut luvat
         hoitajaidt = dbSelect(self.conn,
                               """
                               SELECT   hoitajaid hid
@@ -94,19 +90,21 @@ class Hoitajat(object):
                               """)
         dbAction(self.conn,"DROP TABLE vaaditut")
 
-        print(kayntiid, ": ", hoitajaidt)
+        # luo hoitajaoliot
         hoitajat = [self.hae(hoitajaid=hid[0]) for hid in hoitajaidt]
         return hoitajat
         
 
     def haeLuvat(self, hoitajaId):
+        """Hae hoitajaid:n perusteella luvat. Palauttaa listan (id, lupa)-pareja"""
         luvat = dbSelect(self.conn, """SELECT lupaid, lupa from hoitajaluvat, luvat
                                        WHERE  lupaid = luvat.id
                                        AND    hoitajaid = ?""", (hoitajaId,))
         return luvat
 
-    def luoLuvat(self, hoitajaId, luvat):
-        for l in luvat:
+    def luoLuvat(self, hoitajaId, lupaidt):
+        """Luo kantaan annetunlaiset lupa-rivit"""
+        for l in lupaidt:
             dbInsert(self.conn, """INSERT into hoitajaluvat (hoitajaid, lupaid)
                          values (?,?)""", (hoitajaId, l))
         
@@ -118,7 +116,7 @@ class Asiakkaat(object):
         self.conn = tkyhteys
 
     def hae(self, asiakasid=None, nimi=None):
-        """Hakee tietokannasta asiakkaan joko nimen tai id:n perusteella"""
+        """Hakee tietokannasta asiakkaan joko nimen tai id:n perusteella. Palauttaa Asiakas-olion"""
         if not asiakasid and not nimi:
             raise TypeError("hae tarvitsee argumentin asiakasid tai nimi")
 
@@ -135,21 +133,25 @@ class Asiakkaat(object):
         return Asiakas(asiakasid, nimi, kaynnit)
 
     def kaikki(self):
+        """Palauttaa listan, jossa on Asiakas-olio jokaista asiakasriviä kohden"""
         asiakasidt = dbSelect(self.conn, "SELECT id from asiakkaat")
         return [self.hae(aid[0]) for aid in asiakasidt]
 
     def uusi(self, nimi):
+        """Luo kantaan uusi asiakas"""
         dbInsert(self.conn, """INSERT INTO asiakkaat (nimi)
                                VALUES (?)""", (nimi,))
 
-    def lisaaKaynti(self, asiakasid, kesto, aika, paiva, luvat):
+    def lisaaKaynti(self, asiakasid, kestoid, aikaid, paivaid, lupaidt):
+        """Lisää tietokantaan käynnin jolla on annetut arvot."""
         kayntiId = dbInsert(self.conn, """INSERT into kaynnit (asiakasid, kestoid, aikaid, paivaid)
                                           values (?,?,?,?)""",
-                                       (asiakasid, kesto, aika, paiva))
-        for l in luvat:
+                                       (asiakasid, kestoid, aikaid, paivaid))
+        for l in lupaidt:
             self.lisaaKayntiLupa(kayntiId, l)
 
     def haeKaynnit(self, asiakasid):
+        """Palauttaa listan, jossa on Kaynti-olio jokaista annetun asiakkaan käyntiä kohden"""
         kayntirivit = dbSelect(self.conn, 
                                """SELECT kaynnit.id, asiakasid, paiva, aika, kesto FROM kaynnit, ajat, kestot, paivat
                                   WHERE  paivaid=paivat.id
@@ -157,6 +159,7 @@ class Asiakkaat(object):
                                   AND    kestoid=kestot.id                               
                                   AND    asiakasid = ?
                                """, (asiakasid,))
+        # Luo käyntiriveistä kaynti-oliot
         kaynnit = []
         for rivi in kayntirivit:
             luvat = self.haeKayntiLuvat(rivi[0])
@@ -165,11 +168,13 @@ class Asiakkaat(object):
         return kaynnit
 
     def kaikkiKaynnit(self):
+        """Palauttaa listan jossa on Kaynti-olio jokaista käyntiä kohden"""
         kayntirivit = dbSelect(self.conn,
                                """SELECT kaynnit.id, asiakasid, paiva, aika, kesto FROM kaynnit, ajat, kestot, paivat
                                   WHERE  paivaid=paivat.id
                                   AND    aikaid=ajat.id
                                   AND    kestoid=kestot.id""")
+        # Luo käyntiriveistä kaynti-oliot
         kaynnit = []
         for rivi in kayntirivit:
             luvat = self.haeKayntiLuvat(rivi[0])
@@ -198,7 +203,9 @@ class Asiakkaat(object):
 
 
 class Vakiot(object):
-    """Luokka tietokannassa olevien arvojen tekstimuotoisten nimien hakuun"""
+    """Luokka tietokannassa olevien arvojen tekstimuotoisten nimien hakuun
+       Kaikki metodit palauttavat listan (id, arvo)-pareja.
+    """
     
     def __init__(self, tkyhteys):
         self.conn =tkyhteys
@@ -219,7 +226,6 @@ class Vakiot(object):
     def kestot(self):
         kestot = dbSelect(self.conn, "SELECT id, kesto FROM kestot ORDER BY id")
         return kestot
-
 
 
 def dbInsert(conn, insertstr, params=None):
