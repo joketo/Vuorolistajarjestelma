@@ -166,8 +166,10 @@ class Asiakkaat(object):
 
     def kaikkiKaynnit(self):
         kayntirivit = dbSelect(self.conn,
-                               "SELECT kaynti.id, asiakasid, paiva, aika, kesto from kaynnit, ajat, kestot")
-
+                               """SELECT kaynnit.id, asiakasid, paiva, aika, kesto FROM kaynnit, ajat, kestot, paivat
+                                  WHERE  paivaid=paivat.id
+                                  AND    aikaid=ajat.id
+                                  AND    kestoid=kestot.id""")
         kaynnit = []
         for rivi in kayntirivit:
             luvat = self.haeKayntiLuvat(rivi[0])

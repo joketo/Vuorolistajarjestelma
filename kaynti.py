@@ -9,9 +9,6 @@ class Kaynti(object):
         self.asiakasid = asiakasid
         self.asiakkaat = asiakkaat
     
-    def kestoNum(self):
-        return vakioita.kestot[self.kesto]
-    
     def asiakas(self):
         #TODO: arvioi tämän paikka
         return self.asiakkaat.hae(asiakasid=self.asiakasid)
