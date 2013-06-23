@@ -8,12 +8,22 @@ def loginVaaditaan():
     if not app().auth.isLogged():
         redirect("/login")
 
+def virheViesti():
+    """Hae sessioon liittyvä virheviesti ja palauta se jos sellainen on. None muuten"""
+    s = request.environ["beaker.session"]
+    viesti = None if not "virheviesti" in s else s["virheviesti"]
+    s["virheviesti"] = None
+    return viesti
+
+def asetaVirheViesti(viesti):
+    request.environ["beaker.session"]["virheviesti"] = viesti
 
 @route("/")
 def etusivu():
+    virheviesti = virheViesti()
     loginVaaditaan()
     nimi = app().auth.loggedAs()
-    return template("front", nimi=nimi)
+    return template("front", nimi=nimi, virheviesti=virheviesti)
 
     
 @route('/static/<filepath:path>')
@@ -24,7 +34,8 @@ def server_static(filepath):
 
 @route("/login")
 def login():
-    return template("loginForm", virheviesti=None)
+    virheviesti = virheViesti()
+    return template("loginForm", virheviesti=virheviesti)
 
 
 @route("/login", method="POST")
@@ -36,7 +47,7 @@ def login_post():
         app().auth.login(name, password)
     # Innokas except jottei loginin epäonnistumisviesti anna vihjeitä hyökkääjälle
     except Exception:
-        return template("loginForm", virheviesti="Kirjautuminen epäonnistui")
+        asetaVirheViesti("Kirjautuminen epäonnistui")
     redirect("/")
 
 
@@ -48,7 +59,8 @@ def logout():
 
 @route("/register")
 def register():
-    return template("register", virheviesti=None)
+    virheviesti=virheViesti()
+    return template("register", virheviesti=virheViesti)
 
 
 @route("/register", method="POST")
@@ -58,11 +70,13 @@ def register_post():
     password2 = request.forms.getunicode("password2")
     
     if password1 != password2:
-        return template("register", virheviesti="Salasanat eivät täsmää")
+        asetaVirheViesti("Salasanat eivät täsmää")
+        redirect("/register")
     try:
         app().auth.register(name, password1)
     except IntegrityError:
-        return template("register", virheviesti="Valitsemasi käyttäjätunnus on jo käytössä")
+        asetaVirheViesti("Valitsemasi käyttäjätunnus on jo käytössä")
+        redirect("/register")
     return template("rekOK")
 
 
@@ -70,9 +84,10 @@ def register_post():
 def hoitajat():
     """Hoitajien hallintasivu"""
     loginVaaditaan()
+    virheviesti = virheViesti()
     hoitsut = app().hoitajat.kaikki()
     luvat = app().vakiot.luvat()
-    return template("hoitajat", hoitajat=hoitsut, luvat=luvat)
+    return template("hoitajat", hoitajat=hoitsut, luvat=luvat, virheviesti=virheviesti)
     
 
 @route("/hoitajat", method="POST")
@@ -85,8 +100,8 @@ def hoitajat_post():
     try:
         app().hoitajat.uusi(nimi, luvat)
     except Exception:
-        return template("hoitajat", hoitajat=app().hoitajat.kaikki(),
-                        virheviesti="Hoitajan lisäys epäonnistui")
+        asetaVirheViesti("Hoitajan lisäys epäonnistui")
+        redirect("/hoitajat")
     redirect("/hoitajat")
 
 
@@ -105,26 +120,28 @@ def asiakkaat_post():
     loginVaaditaan()
     nimi = request.forms.getunicode("nimi")
     if not nimi:
-        return template("asiakkaanHallinta", asiakkaat=app().asiakkaat.kaikki(), 
-                        virheviesti="Asiakkaalla tulee olla nimi")
+        asetaVirheViesti("Asiakkaalla tulee olla nimi")
+        redirect("asiakkaanHallinta")
     try:
         app().asiakkaat.uusi(nimi)
     except Exception:
-        return template("asiakkaanHallinta", asiakkaat=app().asiakkaat.kaikki(), 
-                        virheviesti="Asiakkaan lisäys epäonnistui")
+        asetaVirheViesti("Asiakkaan lisäys epäonnistui")
     redirect("/asiakkaanHallinta")
     
     
 @route("/asiakkaanHallinta")
 def asiakkaanHallinta():
     """Asiakkaiden hallintasivu"""
+    virheviesti = virheViesti()
+
     loginVaaditaan()
     asiakkaat = app().asiakkaat.kaikki()
     luvat = app().vakiot.luvat()
     paivat = app().vakiot.paivat()
     ajat = app().vakiot.ajat()
     kestot = app().vakiot.kestot()
-    return template("asiakkaanHallinta", asiakkaat=asiakkaat, luvat=luvat, ajat=ajat, kestot=kestot, paivat=paivat)
+    return template("asiakkaanHallinta", asiakkaat=asiakkaat, luvat=luvat, ajat=ajat, 
+                    kestot=kestot, paivat=paivat, virheviesti=virheviesti)
     
 
 @route("/lisaaVuoro", method="POST")
@@ -139,7 +156,11 @@ def lisaaVuoro_post():
     luvat = request.forms.getall("lupa")
     # kai tähän pitää olla fiksumpi tapa, ei ole getallunicode()-metodia...
     luvat = [l.encode("latin-1").decode("utf8") for l in luvat]
-    app().asiakkaat.lisaaKaynti(asiakasid, kesto, aika, paiva, luvat)
+    try:
+        app().asiakkaat.lisaaKaynti(asiakasid, kesto, aika, paiva, luvat)
+    except IntegrityError:
+        asetaVirheViesti("Käynnin lisäys epäonnistui")
+        
     redirect("/asiakkaanHallinta")
 
 
