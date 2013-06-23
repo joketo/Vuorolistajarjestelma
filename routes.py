@@ -7,6 +7,7 @@ from sqlite3 import IntegrityError
 
 
 def loginVaaditaan():
+    return
     """Redirectaa login-sivulle jos käyttäjä ei ole kirjautunut"""
     if not app().auth.isLogged():
         redirect("/login")
@@ -113,7 +114,6 @@ def hoitajat_post():
 def poistaHoitaja():
     loginVaaditaan()
     hoitaja = request.forms.getunicode("poistettava")
-    print(hoitaja)
     app().hoitajat.poista(nimi=hoitaja)
     redirect("/hoitajat")
 
@@ -170,7 +170,11 @@ def lisaaVuoro_post():
 
 @route("/hoitovuorot")
 def hoitovuorot():
-    """Jaa ja näytä hoitovuorot"""
+    """Jaa ja näytä hoitovuorot. Jakaa hoitovuorot ainoastaan niiden 
+       lukumäärän perusteella. Voisi tehdä myös keston perusteella mutta 
+       käyntien kestot ovat pääsääntöisesti lyhyitä joten paikasta toiseen 
+       kulkemisen viemä aika on huomattava.
+    """
     loginVaaditaan()
     # jakaa hoitovuoron mahdollisista hoitajista aina sille, jolla on
     # vähiten käyntejä. Voisi jakaa ajan perusteella mutta käynnit
@@ -182,8 +186,8 @@ def hoitovuorot():
 
     for k in app().asiakkaat.kaikkiKaynnit():
         sopivat = app().hoitajat.haeSopivatKaynnilla(k.kayntiid)
-        if not sopivat:
-            vaillaHoitajaa.append(str(k))
+        if not sopivat: #ei löytynyt sopivia hoitajia
+            vaillaHoitajaa.append(k.asiakasnimi + ": " + str(k))
             continue
         hoitaja = min(sopivat, key=lambda k: hoitokerrat[k.nimi])
         hoitokerrat[hoitaja.nimi] += 1

@@ -1,3 +1,6 @@
+%setdefault('virheviesti', None)
+%include virhe virheviesti=virheviesti
+
 %for h in hoitajat:
 <p>
   <h3>{{h}}:</h3>

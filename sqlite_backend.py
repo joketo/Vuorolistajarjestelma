@@ -75,25 +75,31 @@ class Hoitajat(object):
                  SELECT lupaid FROM kayntiluvat
                  WHERE kayntiid=?
                  """, (kayntiid,))
- 
-        # idea: hae sellaiset hoitajaid:t joilla lupien ja vaadittujen
-        # lupien leikkaus on kooltaan yhtä suuri kuin vaaditut luvat
-        hoitajaidt = dbSelect(self.conn,
-                              """
-                              SELECT   hoitajaid hid
-                              FROM     hoitajaluvat
-                              GROUP BY hoitajaid
-                              HAVING   (SELECT count(*) 
-                                        FROM hoitajaluvat 
-                                        JOIN vaaditut USING (lupaid)
-                                        WHERE hoitajaid = hid) =
-                                       (SELECT count(*)
-                                        FROM vaaditut)
-                              """)
-        dbAction(self.conn, "DROP TABLE vaaditut")
 
-        # luo hoitajaoliot
-        hoitajat = [self.hae(hoitajaid=hid[0]) for hid in hoitajaidt]
+        #pikakorjaus, jutut näyttivät hajoavan kun hoitajalla ei ollut
+        #yhtään lupia...
+        vlkm = dbSelect(self.conn, "SELECT COUNT(*) FROM vaaditut")[0][0]
+        if(vlkm > 0):
+            # idea: hae sellaiset hoitajaid:t joilla lupien ja vaadittujen
+            # lupien leikkaus on kooltaan yhtä suuri kuin vaaditut luvat
+            hoitajaidt = dbSelect(self.conn,
+                                  """
+                                  SELECT   hoitajaid hid
+                                  FROM     hoitajaluvat
+                                  GROUP BY hoitajaid
+                                  HAVING   (SELECT count(*) 
+                                  FROM hoitajaluvat 
+                                  JOIN vaaditut USING (lupaid)
+                                  WHERE hoitajaid = hid) ==
+                                  (SELECT count(*)
+                                  FROM vaaditut)
+                                  """)
+            # luo hoitajaoliot
+            hoitajat = [self.hae(hoitajaid=hid[0]) for hid in hoitajaidt]
+        else:
+            hoitajat = self.kaikki()
+
+        dbAction(self.conn, "DROP TABLE vaaditut")
         return hoitajat
 
     def haeLuvat(self, hoitajaId):
@@ -229,7 +235,6 @@ class Vakiot(object):
 
     def ajat(self):
         ajat = dbSelect(self.conn, "SELECT id, aika FROM ajat ORDER BY id")
-        print("aika", ajat)
         return ajat
 
     def kestot(self):
