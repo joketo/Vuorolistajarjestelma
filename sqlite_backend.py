@@ -188,7 +188,7 @@ class Asiakkaat(object):
         return [l for l in luvat]
         
     def poistaAsiakas(self, asiakasId):
-        dbAction(self.conn, "DELETE FROM asiakkaat where id=?", (asiakasId, asiakasId, asiakasId))
+        dbAction(self.conn, "DELETE FROM asiakkaat where id=?", (asiakasId,))
         
     def poistaKaynti(self, kayntiId):
          dbAction(self.conn, "DELETE FROM kaynnit where id=?", (kayntiId,))

@@ -157,11 +157,14 @@ def hoitovuorot():
 
     return template("hoitovuorot", hoitajat=hoitovuorot)
 
-@route("/poistaKaynti", method="POST")
+@route("/poistaKayntiTaiAsiakas", method="POST")
 def poistaKaynti():
     kayntiId = request.forms.getunicode("kayntiid")
-    app().asiakkaat.poistaKaynti(kayntiId)
-    print (kayntiId)
+    asiakasId = request.forms.getunicode("asiakasid")
+    if kayntiId:
+        app().asiakkaat.poistaKaynti(kayntiId)
+    if asiakasId:
+        app().asiakkaat.poistaAsiakas(asiakasId)
     redirect("/asiakkaanHallinta")
 
 
