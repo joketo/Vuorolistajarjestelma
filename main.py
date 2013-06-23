@@ -1,5 +1,6 @@
 import os
 import sys
+import argparse
 import bottle
 import sqlite3
 from beaker.middleware import SessionMiddleware
@@ -10,29 +11,37 @@ from sqlite_backend import Hoitajat, Asiakkaat, Users
 from auth import Auth
 
 
-dbfile = "test.db" if len(sys.argv)<2 else sys.argv[1]
+if __name__ == '__main__':
+    # hae komentoriviparametrit argparsella
+    # TODO: väännä argparsen helppi suomeksi
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-db", type=str, help="Tietokantatiedosto")
+    parser.add_argument("--nosync", "-n", help="Laita sqliten synkronointi pois. Vaarallinen mutta paljon nopeampi esim. nfs-jaolta ajaessa", action="store_true")
+    args = parser.parse_args()
+    #onko tietokanta olemassa? jos ei, luo se
+    if not os.path.isfile(args.db):
+        create_tables.create_all(args.db)
 
-#onko tietokanta olemassa? jos ei, luo se
-if not os.path.isfile(dbfile):
-    create_tables.create_all(dbfile)
+    #tietokantayhteys ja backend-oliot
+    conn = sqlite3.connect(args.db)
+    hoitajat = Hoitajat(conn)
+    asiakkaat = Asiakkaat(conn)
+    auth = Auth(Users(conn))
     
+    if args.nosync:
+        conn.execute("PRAGMA synchronous=OFF")
 
-#tietokantayhteys ja backend-oliot
-conn = sqlite3.connect(dbfile)
-hoitajat = Hoitajat(conn)
-asiakkaat = Asiakkaat(conn)
-auth = Auth(Users(conn))
-
-# beaker-asetukset
-session_opts = {
-    'session.type': 'memory',
-    'session.cookie_expires': 2000,
-    'session.auto': True
-}
-app = SessionMiddleware(bottle.app(), session_opts)
-
-if __name__ == "__main__":
-    conn.execute("PRAGMA synchronous=OFF")
+    # beaker-asetukset
+    session_opts = {
+        'session.type': 'memory',
+        'session.cookie_expires': 2000,
+        'session.auto': True
+    }
+    app = SessionMiddleware(bottle.app(), session_opts)
+    app.app.hoitajat = hoitajat
+    app.app.asiakkaat = asiakkaat
+    app.app.auth = auth
+    # päräytä itse ohjelma käyntiin
     bottle.run(app=app, host='localhost', port=8080, debug=True, reloader=True)
-    bottle.app()
+
 

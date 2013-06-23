@@ -1,25 +1,22 @@
 from bottle import route, run, template, response, request, redirect, static_file, app
-from main import auth, conn, hoitajat, asiakkaat
 from sqlite3 import IntegrityError
 
 
 def loginVaaditaan():
-    if not auth.isLogged():
+    if not app().auth.isLogged():
         redirect("/login")
-    
+
+@route("/test")
+def test():
+    return str(dir(app()))
 
 @route("/")
 def etusivu():
     loginVaaditaan()
-    nimi = auth.loggedAs()
+    nimi = app().auth.loggedAs()
     return template("front", nimi=nimi)
+
     
-@route("/test")
-def test():
-    app().message = "testi toimii"
-    return "test"
-
-
 @route('/static/<filepath:path>')
 def server_static(filepath):
     return static_file(filepath, root='static')
@@ -36,7 +33,7 @@ def login_submit():
     password = request.forms.getunicode("password")
     
     try:
-        auth.login(name, password)
+        app().auth.login(name, password)
     # Innokas except jottei loginin epäonnistumisviesti anna vihjeitä hyökkääjälle
     except:
         return template("loginForm", virheviesti="Kirjautuminen epäonnistui")
@@ -45,7 +42,7 @@ def login_submit():
 
 @route("/logout")
 def logout():
-    auth.logout()
+    app().auth.logout()
     return template("logout")
 
 
@@ -63,24 +60,16 @@ def register_post():
     if password1 != password2:
         return template("register", virheviesti="Salasanat eivät täsmää")
     try:
-        auth.register(name, password1)
+        app().auth.register(name, password1)
     except IntegrityError:
         return template("register", virheviesti="Valitsemasi käyttäjätunnus on jo käytössä")
     return template("rekOK")
 
 
-@route("/registered")
-def registered():
-    c = conn.cursor()
-    c.execute("SELECT id, username from users")
-    users = c.fetchall()
-    return template("registered", users=str(users))
-
-
 @route("/hoitajat")
 def hoitajat_get():
     loginVaaditaan()
-    hoitsut = hoitajat.kaikki()
+    hoitsut = app().hoitajat.kaikki()
     return template("hoitajat", hoitajat=hoitsut)
     
 
@@ -92,9 +81,9 @@ def hoitajat_post():
     # kai tähän pitää olla fiksumpi tapa, ei ole getallunicode()-metodia...
     luvat = [l.encode("latin-1").decode("utf8") for l in luvat]
     try:
-        hoitajat.uusi(nimi, luvat)
+        app().hoitajat.uusi(nimi, luvat)
     except:
-        return template("hoitajat",hoitajat=hoitajat.kaikki(),
+        return template("hoitajat",hoitajat=app().hoitajat.kaikki(),
                         virheviesti="Hoitajan lisäys epäonnistui")
     redirect("/hoitajat")
 
@@ -104,7 +93,7 @@ def poistaHoitaja():
     loginVaaditaan()
     hoitaja = request.forms.getunicode("poistettava")
     print(hoitaja)
-    hoitajat.poista(nimi=hoitaja)
+    app().hoitajat.poista(nimi=hoitaja)
     redirect("/hoitajat")
 
 
@@ -113,12 +102,12 @@ def asiakkaat_post():
     loginVaaditaan()
     nimi = request.forms.getunicode("nimi")
     if not nimi:
-        return template("asiakkaanHallinta", asiakkaat=asiakkaat.kaikki(), 
+        return template("asiakkaanHallinta", asiakkaat=app().asiakkaat.kaikki(), 
                         virheviesti="Asiakkaalla tulee olla nimi")
     try:
-        asiakkaat.uusi(nimi)
+        app().asiakkaat.uusi(nimi)
     except Exception:
-        return template("asiakkaanHallinta", asiakkaat=asiakkaat.kaikki(), 
+        return template("asiakkaanHallinta", asiakkaat=app().asiakkaat.kaikki(), 
                         virheviesti="Asiakkaan lisäys epäonnistui")
         
     redirect("/asiakkaanHallinta")
@@ -127,7 +116,7 @@ def asiakkaat_post():
 @route("/asiakkaanHallinta")
 def asiakkaanHallinta():
     loginVaaditaan()
-    return template("asiakkaanHallinta", asiakkaat=asiakkaat.kaikki())
+    return template("asiakkaanHallinta", asiakkaat=app().asiakkaat.kaikki())
     
 
 @route("/lisaaVuoro", method="POST")
@@ -141,7 +130,7 @@ def lisaaVuoro_post():
     luvat = request.forms.getall("lupa")
     # kai tähän pitää olla fiksumpi tapa, ei ole getallunicode()-metodia...
     luvat = [l.encode("latin-1").decode("utf8") for l in luvat]
-    asiakkaat.lisaaKaynti(asiakasid, kesto, aika, paiva, luvat)
+    app().asiakkaat.lisaaKaynti(asiakasid, kesto, aika, paiva, luvat)
     redirect("/asiakkaanHallinta")
 
 
@@ -151,10 +140,10 @@ def hoitovuorot():
     # TODO: luo hoitovuorot jossain muualla
     # jakaa hoitovuoron mahdollisista hoitajista aina sille, jolla on
     # vähiten käyntejä
-    hoitokerrat = {h: 0 for h in map(lambda h: h.nimi, hoitajat.kaikki())}
-    hoitovuorot = {h: [] for h in map(lambda h: h.nimi, hoitajat.kaikki())}
-    for k in asiakkaat.kaikkiKaynnit():
-        sopivat = hoitajat.haeSopivatKaynnilla(k.kayntiid)
+    hoitokerrat = {h: 0 for h in map(lambda h: h.nimi, app().hoitajat.kaikki())}
+    hoitovuorot = {h: [] for h in map(lambda h: h.nimi, app().hoitajat.kaikki())}
+    for k in app().asiakkaat.kaikkiKaynnit():
+        sopivat = app().hoitajat.haeSopivatKaynnilla(k.kayntiid)
         hoitaja = min(sopivat, key=lambda k: hoitokerrat[k.nimi])
         hoitokerrat[hoitaja.nimi] += 1
         hoitovuorot[hoitaja.nimi].append(k)
@@ -164,7 +153,7 @@ def hoitovuorot():
 @route("/poistaKaynti", method="POST")
 def poistaKaynti():
     kayntiId = request.forms.getunicode("kayntiid")
-    asiakkaat.poistaKaynti(kayntiId)
+    app().asiakkaat.poistaKaynti(kayntiId)
     print (kayntiId)
     redirect("/asiakkaanHallinta")
 
