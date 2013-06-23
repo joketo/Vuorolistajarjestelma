@@ -1,5 +1,10 @@
+#Skripta tyhjän tietokannan luomiseen, tätä voi käyttää stand-alonena
+#tai kutsua muusta koodista (main.py kutsuu tätä jos tietokantaa ei ole)
+
 import sqlite3
-import sys, os
+import sys
+import os
+
 
 def usedb(dbname, dbstring, createparams=tuple()):
     conn = sqlite3.connect(dbname)
@@ -15,7 +20,7 @@ def create_users(dbname):
                      salt blob, hash blob)""")
 
 
-def create_hoitsut(dbname):
+def create_hoitajat(dbname):
     usedb(dbname, """CREATE TABLE hoitajat
                      (id integer primary key autoincrement,
                       nimi text unique not null)""")
@@ -50,13 +55,15 @@ def create_hoitajaluvat(dbname):
                      lupaid integer references luvat(id) on delete cascade)
                   """)
 
+
 def create_luvat(dbname):
     """Luo taulun mahdollisista luvista"""
     usedb(dbname, """CREATE TABLE luvat
                      (id integer primary key autoincrement,
                       lupa text unique not null)""")
-    usedb(dbname,"""INSERT INTO luvat (lupa)
+    usedb(dbname, """INSERT INTO luvat (lupa)
                     VALUES ("lääke"), ("haavat"), ("silmätipat"), ("piikit")""")
+
 
 def create_paivat(dbname):
     """Luo taulun joka sisältää päivien nimet"""
@@ -76,6 +83,7 @@ def create_ajat(dbname):
                      VALUES ("8-10"), ("10-12"), 
                      ("12-14"), ("16-20"), ("20-22")""")
 
+
 def create_kestot(dbname):
     """Luo taulukon sallituista käyntien kestoista"""
     usedb(dbname, """CREATE TABLE kestot
@@ -85,9 +93,10 @@ def create_kestot(dbname):
                      VALUES (10), (15), (20), (30), 
                      (45), (50), (60)""")
 
+
 def create_all(db):
     create_users(db)
-    create_hoitsut(db)
+    create_hoitajat(db)
     create_asiakkaat(db)
     create_kaynnit(db)
     create_kayntiluvat(db)

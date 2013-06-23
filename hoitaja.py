@@ -18,4 +18,3 @@ class Hoitaja(object):
 
     def __repr__(self):
         return self.nimi + " " + str(self.luvat)
-
