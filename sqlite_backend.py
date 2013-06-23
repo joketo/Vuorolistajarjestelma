@@ -50,7 +50,6 @@ class Hoitajat(object):
             hoitajaid = dbSelect(self.conn, "SELECT rowid from hoitajat where nimi=?", 
                                  (nimi,))[0][0]
             dbAction(self.conn, "DELETE FROM hoitajat where nimi=?", (nimi,))
-        self.poistaLuvat(hoitajaid)
 
     def poistaLuvat(self, hoitajaid):
          dbAction(self.conn, "DELETE FROM hoitajaluvat where hoitajaid=?", (hoitajaid,))
@@ -77,7 +76,7 @@ class Hoitajat(object):
         dbAction(self.conn,
                  """
                  CREATE TEMP TABLE vaaditut AS 
-                 SELECT lupa FROM kayntiluvat
+                 SELECT lupaid FROM kayntiluvat
                  WHERE kayntiid=?
                  """, (kayntiid,))
  
@@ -88,7 +87,7 @@ class Hoitajat(object):
                               GROUP BY hoitajaid
                               HAVING   (SELECT count(*) 
                                         FROM hoitajaluvat 
-                                        JOIN vaaditut USING (lupa)
+                                        JOIN vaaditut USING (lupaid)
                                         WHERE hoitajaid = hid) =
                                        (SELECT count(*)
                                         FROM vaaditut)
@@ -101,13 +100,13 @@ class Hoitajat(object):
         
 
     def haeLuvat(self, hoitajaId):
-        luvat = dbSelect(self.conn, """SELECT lupa from hoitajaluvat
+        luvat = dbSelect(self.conn, """SELECT lupaid from hoitajaluvat
                      where hoitajaid = ?""", (hoitajaId,))
         return [a[0] for a in luvat]
 
     def luoLuvat(self, hoitajaId, luvat):
         for l in luvat:
-            dbInsert(self.conn, """INSERT into hoitajaluvat (hoitajaid, lupa)
+            dbInsert(self.conn, """INSERT into hoitajaluvat (hoitajaid, lupaid)
                          values (?,?)""", (hoitajaId, l))
         
 
@@ -125,17 +124,17 @@ class Asiakkaat(object):
         # TODO: heittele virhe jos ei löydy moisen nimistä/id:istä
         if asiakasid:
             asiakasid, nimi = dbSelect(self.conn, 
-                                       "SELECT rowid, nimi from asiakkaat where rowid=?",
+                                       "SELECT id, nimi from asiakkaat where id=?",
                                        (asiakasid,))[0]
         else:
             asiakasid, nimi = dbSelect(self.conn, 
-                                       "SELECT rowid, nimi from asiakkaat where nimi=?",
+                                       "SELECT id, nimi from asiakkaat where nimi=?",
                                        (nimi,))[0]
         kaynnit = self.haeKaynnit(asiakasid)
         return Asiakas(asiakasid, nimi, kaynnit)
 
     def kaikki(self):
-        asiakasidt = dbSelect(self.conn, "SELECT rowid from asiakkaat")
+        asiakasidt = dbSelect(self.conn, "SELECT id from asiakkaat")
         return [self.hae(aid[0]) for aid in asiakasidt]
 
     def uusi(self, nimi):
@@ -151,7 +150,7 @@ class Asiakkaat(object):
 
     def haeKaynnit(self, asiakasid):
         kayntirivit = dbSelect(self.conn, 
-                               "SELECT rowid, asiakasid, paiva, aika, kesto from kaynnit where asiakasid = ?",
+                               "SELECT id, asiakasid, paiva, aika, kesto from kaynnit where asiakasid = ?",
                                (asiakasid,))
         kaynnit = []
         for rivi in kayntirivit:
@@ -161,7 +160,7 @@ class Asiakkaat(object):
 
     def kaikkiKaynnit(self):
         kayntirivit = dbSelect(self.conn,
-                               "SELECT rowid, asiakasid, paiva, aika, kesto from kaynnit")
+                               "SELECT id, asiakasid, paiva, aika, kesto from kaynnit")
 
         kaynnit = []
         for rivi in kayntirivit:
@@ -170,35 +169,44 @@ class Asiakkaat(object):
         return kaynnit
 
     def lisaaKayntiLupa(self, kayntiId, lupa):
-        dbInsert(self.conn, """INSERT into kayntiluvat (kayntiid, lupa)
+        dbInsert(self.conn, """INSERT into kayntiluvat (kayntiid, lupaid)
                           values (?,?)""", (kayntiId, lupa))
 
     def haeKayntiLuvat(self, kayntiId):
         luvat = dbSelect(self.conn,
-                         "SELECT lupa from kayntiluvat where kayntiid=?", (kayntiId,))
+                         "SELECT lupaid from kayntiluvat where kayntiid=?", (kayntiId,))
         return [l[0] for l in luvat]
         
     def poistaAsiakas(self, asiakasId):
-        dbAction(self.conn, """
-                            BEGIN TRANSACTION
-                            DELETE FROM asiakkaat where rowid=?"
-                            DELETE FROM kayntiluvat
-                            WHERE kayntiid in (SELECT kayntiid FROM kaynnit
-                                               WHERE rowid=?)
-                            DELETE FROM kayntiluvat WHERE rowid=?
-                            """, (asiakasId, asiakasId, asiakasId))
+        dbAction(self.conn, "DELETE FROM asiakkaat where id=?", (asiakasId, asiakasId, asiakasId))
         
-
     def poistaKaynti(self, kayntiId):
-         dbAction(self.conn, "DELETE FROM kaynnit where rowid=?", (kayntiId,))
-         self.poistaKayntiLuvat(kayntiId)
-        
+         dbAction(self.conn, "DELETE FROM kaynnit where id=?", (kayntiId,))
+                
     def poistaKayntiLuvat(self, kayntiId):
          dbAction(self.conn, "DELETE FROM kayntiluvat where kayntiid=?", (kayntiId,))
 
 
+class Vakiot(object):
+    """Luokka tietokannassa olevien arvojen tekstimuotoisten nimien hakuun"""
+    
+    def __init__(self, tkyhteys):
+        self.conn =tkyhteys
+
+    def paivat(self):
+        paivat = dbSelect(self.conn, "SELECT paiva FROM paivat")
+        return [p[0] for p in paivat]
+
+    def luvat(self):
+        luvat = dbSelect(self.conn, "SELECT lupa FROM luvat")
+        return [l[0] for l in luvat]
+
+        
+        
+
+
 def dbInsert(conn, insertstr, params=None):
-    """Suorita annettu insert-tyyppinen tietokantatoiminto ja palauta lisätyn rivin rowid"""
+    """Suorita annettu insert-tyyppinen tietokantatoiminto ja palauta lisätyn rivin id"""
     c = conn.cursor()
     if params:
         c.execute(insertstr, params)
