@@ -4,6 +4,7 @@ import bottle
 import sqlite3
 from beaker.middleware import SessionMiddleware
 
+import routes
 import create_tables
 from sqlite_backend import Hoitajat, Asiakkaat, Users, Vakiot
 from auth import Auth
