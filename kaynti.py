@@ -11,4 +11,4 @@ class Kaynti(object):
     
     def __repr__(self):
         return (self.paiva + ", klo " + self.aika + ", " +
-                str(self.kesto) + " min")
+                str(self.kesto) + " min, luvat: " + str(self.luvat))
