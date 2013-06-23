@@ -118,8 +118,12 @@ def asiakkaat_post():
 @route("/asiakkaanHallinta")
 def asiakkaanHallinta():
     loginVaaditaan()
+    asiakkaat = app().asiakkaat.kaikki()
     luvat = app().vakiot.luvat()
-    return template("asiakkaanHallinta", asiakkaat=app().asiakkaat.kaikki(), luvat=luvat)
+    paivat = app().vakiot.paivat()
+    ajat = app().vakiot.ajat()
+    kestot = app().vakiot.kestot()
+    return template("asiakkaanHallinta", asiakkaat=asiakkaat, luvat=luvat, ajat=ajat, kestot=kestot, paivat=paivat)
     
 
 @route("/lisaaVuoro", method="POST")

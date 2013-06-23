@@ -1,5 +1,5 @@
 import sqlite3
-import sys
+import sys, os
 
 def usedb(dbname, dbstring, createparams=tuple()):
     conn = sqlite3.connect(dbname)
@@ -10,49 +10,44 @@ def usedb(dbname, dbstring, createparams=tuple()):
 
 def create_users(dbname):
     usedb(dbname, """CREATE TABLE users
-                    (id integer primary key autoincrement, username text unique not null, 
+                    (id integer primary key autoincrement,
+                     username text unique not null, 
                      salt blob, hash blob)""")
 
 
 def create_hoitsut(dbname):
     usedb(dbname, """CREATE TABLE hoitajat
-                     (id integer primary key autoincrement, nimi text unique not null)""")
+                     (id integer primary key autoincrement,
+                      nimi text unique not null)""")
 
 
 def create_asiakkaat(dbname):
     usedb(dbname, """CREATE TABLE asiakkaat
-                     (id integer primary key autoincrement, nimi text unique not null)""")
+                     (id integer primary key autoincrement,
+                      nimi text unique not null)""")
 
 
 def create_kaynnit(dbname):
     usedb(dbname, """CREATE TABLE kaynnit
                      (id integer primary key autoincrement,
-                      asiakasid integer not null,
-                      paiva integer not null,
-                      aika integer not null,
-                      kesto integer not null,
-                      FOREIGN KEY(asiakasid)
-                        REFERENCES asiakkaat(id)
-                        ON UPDATE CASCADE)
+                      asiakasid integer references asiakkaat(id) on delete cascade,
+                      paivaid integer references paivat(id) on delete cascade,
+                      aikaid integer references ajat(id) on delete cascade,
+                      kestoid integer not null)
                    """)
 
 
 def create_kayntiluvat(dbname):
     usedb(dbname, """Create TABLE kayntiluvat
-                     (kayntiid integer, 
-                     lupaid integer references luvat on update cascade,
-                     FOREIGN KEY(kayntiid)
-                       REFERENCES kaynnit(id)
-                       ON UPDATE CASCADE)
+                     (kayntiid integer references kaynnit(id) on delete cascade, 
+                     lupaid integer references luvat(id) on delete cascade)
                    """)
 
 
 def create_hoitajaluvat(dbname):
     usedb(dbname, """CREATE TABLE hoitajaluvat
-                     (hoitajaid integer,
-                     lupaid integer references luvat on update cascade,
-                     FOREIGN KEY(hoitajaid)
-                       REFERENCES hoitajat(id) ON UPDATE CASCADE)
+                     (hoitajaid integer references hoitajat(id) on delete cascade,
+                     lupaid integer references luvat(id) on delete cascade)
                   """)
 
 def create_luvat(dbname):
@@ -62,7 +57,33 @@ def create_luvat(dbname):
                       lupa text unique not null)""")
     usedb(dbname,"""INSERT INTO luvat (lupa)
                     VALUES ("lääke"), ("haavat"), ("silmätipat"), ("piikit")""")
-        
+
+def create_paivat(dbname):
+    """Luo taulun joka sisältää päivien nimet"""
+    usedb(dbname, """CREATE TABLE paivat
+                     (id integer primary key autoincrement,
+                      paiva text unique not null)""")
+    usedb(dbname, """INSERT INTO paivat (paiva)
+                     VALUES ("maanantai"), ("tiistai"),("keskiviikko"),
+                     ("torstai"),("perjantai"),("lauantai"),("sunnuntai")""")
+
+def create_ajat(dbname):
+    """Luo taulukon valideista aikaväleistä"""
+    usedb(dbname, """CREATE TABLE ajat
+                     (id integer primary key autoincrement,
+                      aika text unique not null)""")
+    usedb(dbname, """INSERT INTO ajat (aika)
+                     VALUES ("8-10"), ("10-12"), 
+                     ("12-14"), ("16-20"), ("20-22")""")
+
+def create_kestot(dbname):
+    """Luo taulukon sallituista käyntien kestoista"""
+    usedb(dbname, """CREATE TABLE kestot
+                     (id integer primary key autoincrement,
+                      kesto integer unique not null)""")
+    usedb(dbname, """INSERT INTO kestot (kesto)
+                     VALUES (10), (15), (20), (30), 
+                     (45), (50), (60)""")
 
 def create_all(db):
     create_users(db)
@@ -72,7 +93,14 @@ def create_all(db):
     create_kayntiluvat(db)
     create_hoitajaluvat(db)
     create_luvat(db)
+    create_paivat(db)
+    create_ajat(db)
+    create_kestot(db)
 
 if __name__ == '__main__':
     dbname = "test.db" if len(sys.argv)<2 else sys.argv[1]
-    create_all(dbname)
+    try:
+        create_all(dbname)
+    except Exception:
+        # luotiin luultavasti rikkinäinen tietokanta, poistetaan se
+        os.remove(dbname)

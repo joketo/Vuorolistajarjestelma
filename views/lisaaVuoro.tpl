@@ -1,4 +1,4 @@
-%from vakioita import paivat, ajat, kestot
+%#from vakioita import paivat, ajat, kestot
 <p>Lisää valitsemallesi asiakkaalle hoitokäynti</p>
 <form method="POST" action="/lisaaVuoro">
     <select name="asiakas">
@@ -9,19 +9,19 @@
     </select>
     <select name="paiva">
         <option value="ei valittu">--päivä--</option>
-        %for pvm in enumerate(paivat):
+        %for pvm in paivat:
         <option value="{{pvm[0]}}">{{pvm[1]}}</option>
         %end
     </select>
     <select name="aika">
         <option value="ei valittu">--aika--</option>        
-        %for aika in enumerate(ajat):
+        %for aika in ajat:
         <option value="{{aika[0]}}">{{aika[1]}}</option>
         %end
     </select>
     <select name="kesto">
         <option value="ei valittu">--kesto--</option>
-        %for kesto in enumerate(kestot):
+        %for kesto in kestot:
         <option value="{{kesto[0]}}">{{kesto[1]}}</option>
         %end
     </select><br>

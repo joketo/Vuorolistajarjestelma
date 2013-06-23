@@ -143,7 +143,7 @@ class Asiakkaat(object):
                                VALUES (?)""", (nimi,))
 
     def lisaaKaynti(self, asiakasid, kesto, aika, paiva, luvat):
-        kayntiId = dbInsert(self.conn, """INSERT into kaynnit (asiakasid, kesto, aika, paiva)
+        kayntiId = dbInsert(self.conn, """INSERT into kaynnit (asiakasid, kestoid, aikaid, paivaid)
                                           values (?,?,?,?)""",
                                        (asiakasid, kesto, aika, paiva))
         for l in luvat:
@@ -151,8 +151,12 @@ class Asiakkaat(object):
 
     def haeKaynnit(self, asiakasid):
         kayntirivit = dbSelect(self.conn, 
-                               "SELECT id, asiakasid, paiva, aika, kesto from kaynnit where asiakasid = ?",
-                               (asiakasid,))
+                               """SELECT kaynnit.id, asiakasid, paiva, aika, kesto FROM kaynnit, ajat, kestot, paivat
+                                  WHERE  paivaid=paivat.id
+                                  AND    aikaid=ajat.id
+                                  AND    kestoid=kestot.id                               
+                                  AND    asiakasid = ?
+                               """, (asiakasid,))
         kaynnit = []
         for rivi in kayntirivit:
             luvat = self.haeKayntiLuvat(rivi[0])
@@ -162,7 +166,7 @@ class Asiakkaat(object):
 
     def kaikkiKaynnit(self):
         kayntirivit = dbSelect(self.conn,
-                               "SELECT id, asiakasid, paiva, aika, kesto from kaynnit")
+                               "SELECT kaynti.id, asiakasid, paiva, aika, kesto from kaynnit, ajat, kestot")
 
         kaynnit = []
         for rivi in kayntirivit:
@@ -198,15 +202,22 @@ class Vakiot(object):
         self.conn =tkyhteys
 
     def paivat(self):
-        paivat = dbSelect(self.conn, "SELECT paiva FROM paivat")
-        return [p[0] for p in paivat]
+        paivat = dbSelect(self.conn, "SELECT id, paiva FROM paivat ORDER BY id")
+        return paivat
 
     def luvat(self):
-        luvat = dbSelect(self.conn, "SELECT id, lupa FROM luvat")
-        return [l for l in luvat]
+        luvat = dbSelect(self.conn, "SELECT id, lupa FROM luvat ORDER BY id")
+        return luvat
 
-        
-        
+    def ajat(self):
+        ajat = dbSelect(self.conn, "SELECT id, aika FROM ajat ORDER BY id")
+        print("aika", ajat)
+        return ajat
+
+    def kestot(self):
+        kestot = dbSelect(self.conn, "SELECT id, kesto FROM kestot ORDER BY id")
+        return kestot
+
 
 
 def dbInsert(conn, insertstr, params=None):

@@ -1,6 +1,3 @@
-import vakioita
-
-
 class Kaynti(object):
     """Simple user info container"""
     def __init__(self, kayntiid, asiakkaat, asiakasid, luvat, paiva, aika, kesto):
@@ -20,6 +17,5 @@ class Kaynti(object):
         return self.asiakkaat.hae(asiakasid=self.asiakasid)
 
     def __repr__(self):
-        return (vakioita.paivat[self.paiva] +
-                ", klo " + vakioita.ajat[self.aika] + ", " +
-                str(vakioita.kestot[self.kesto]) + " min")
+        return (self.paiva + ", klo " + self.aika + ", " +
+                str(self.kesto) + " min")
