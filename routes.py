@@ -4,7 +4,6 @@ from sqlite3 import IntegrityError
 
 def loginVaaditaan():
     """Redirectaa login-sivulle jos käyttäjä ei ole kirjautunut"""
-    return
     if not app().auth.isLogged():
         redirect("/login")
 
@@ -48,6 +47,7 @@ def login_post():
     # Innokas except jottei loginin epäonnistumisviesti anna vihjeitä hyökkääjälle
     except Exception:
         asetaVirheViesti("Kirjautuminen epäonnistui")
+        redirect("/login")
     redirect("/")
 
 
@@ -60,7 +60,7 @@ def logout():
 @route("/register")
 def register():
     virheviesti=virheViesti()
-    return template("register", virheviesti=virheViesti)
+    return template("register", virheviesti=virheviesti)
 
 
 @route("/register", method="POST")

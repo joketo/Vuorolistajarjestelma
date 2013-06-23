@@ -9,7 +9,16 @@ aina ennen töiden aloittamista:
 source bin/activate
 
 
-TODO
--vuorojen poistaminen, asiakkaiden muokkaus ja poisto
--järkevät virheviestit ja virheiden tarkistus yleensäkin
--vuorojen jako ajan mukaan
+
+kloonaus
+virtualenv --no-site-packages -p python3 ./
+source bin/activate
+pip install -r requirements.txt 
+python main.py
+
+
+tarvitaan
+virtualenv
+python 3
+
+
